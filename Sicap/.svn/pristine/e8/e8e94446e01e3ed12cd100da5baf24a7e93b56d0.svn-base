@@ -1,0 +1,114 @@
+	var close = false;
+	var editarGlobal = 0;
+	
+	$('#formMenus').on('submit',function(event){
+		event.preventDefault() ;
+		event.stopPropagation();
+			
+			try{
+				swal({
+					title: 'Desea guardar los datos del empleado?',
+					text: "Se dispone a guardar los datos del empleado!",
+					type: 'question',
+					showCancelButton: true,		  
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Si, guardarlo!',
+					cancelButtonText: 'No, espera!',
+					confirmButtonClass: 'btn btn-success',
+					cancelButtonClass: 'btn btn-danger',   			
+					showLoaderOnConfirm: true,		 
+					preConfirm: function () {
+						return new Promise(function (resolve, reject) {
+							var action = "";
+							var actualizar = false;
+							if (editarGlobal == 1){
+								action = "actualizarMenu";
+								actualizar = true;
+								editarGlobal = 0;
+							}else{
+								action = "nuevoMenu";
+								
+								actualizar = false;
+								editarGlobal = 0;
+							}
+							
+							$.ajax({
+								url: "./config?action=" + action,
+								data: $('#formMenus').serialize(),		  
+								success: function(data){
+									console.log(data);
+									if (data == '1'){ 
+											$('#formMenus')[0].reset();	
+											close = true;
+											var mensaje = '';
+												if(actualizar){
+													mensaje = 'actualizado';
+												}else{
+													mensaje = 'guardado';
+												}
+												
+											swal({
+												type: 'success',
+												title: 'Correcto',
+												html: 'Empleado '+mensaje+'!'
+											})
+											 $('#registroMenu').modal('toggle');
+											
+									}else{ 
+										var alertError = '<div class="alert alert-danger"><strong>Error!</strong> '+data+'. </div>';
+										$("#rowInit").html(alertError);	
+										swal({
+											type: 'error',
+											title: 'Menu no guardado!',
+											html: 'Menu no guardado'
+										})
+									}           									  
+
+								},
+								error: function(data){
+									var alertError = '<div class="alert alert-danger"><strong>Error!</strong> '+data.responseText+'. </div>';
+									$("#rowInit").html(alertError);
+									swal({
+										type: 'error',
+										title: 'Menu no guardado!',
+										html: 'Menu no guardado'
+									})
+								},
+								complete: function(xhr, status){	
+									var alertSuccess = '<div class="alert alert-success"><strong>Correcto!</strong> Menu guardado correctamente!.</div>';
+									var alertError = '<div class="alert alert-danger"><strong>Error!</strong> '+xhr.responseText+'. </div>';
+									if(status != 'error'){
+										$("#rowInit").html(alertSuccess);	
+									}else{
+										$("#rowInit").html(alertError);	
+									}								
+									console.log(xhr);
+									console.log(xhr.responseText);
+									console.log(status);
+								}
+							});
+						})
+					},
+					allowOutsideClick: false
+				}).then(function () {
+					
+	
+				}, function (dismiss) {
+					// dismiss can be 'cancel', 'overlay',
+					// 'close', and 'timer'
+					if (dismiss === 'cancel') {
+						swal(	'Detenido',
+								'Puede volver a revisar los datos',
+								'error');
+					}
+				}).catch(swal.noop);
+			} catch (e) {
+				throw new Error(e.message);
+			}
+		
+	});
+	
+	
+	
+	

@@ -1,0 +1,287 @@
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<c:if test="${user == null}">
+	<c:redirect url="./" />
+</c:if>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<!-- pageContext.request.contextPath -->
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="description"
+	content="Pagina para consulta de lista de asistencia" />
+<meta name="author" content="Sistemas C4 Tabasco">
+<link rel="manifest" href="./web_app_manifest.json">
+<link rel='shortcut icon' type='image/x-icon' href='./favicon.ico' />
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/base/base.css" rel="stylesheet">
+<link rel="stylesheet" href="css/sweetalert2.min.css" />
+<link rel="stylesheet"
+	href="fonts/fontawesome/font-awesome-4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="css/jquery-ui.min.css" />
+<link rel="stylesheet" href="css/jquery-ui.theme.min.css" />
+<link rel="stylesheet" href="css/dataTables.bootstrap4.min.css" />
+<link rel="stylesheet"
+	href="css/bitacora/llamadas/bitacoraLlamadasCSS.css" />
+
+<title>Consulta de Llamadas | <c:out
+		value="${configSistema.tituloSistema}" /></title>
+</head>
+<body>
+	<jsp:include page="/jsp/header/header.jsp"></jsp:include>
+	<div class="container-fluid">
+		<div class="row" id="initRow"></div>
+		<div class="page-header">
+			<h1>
+				<i class="fa fa-phone" aria-hidden="true"></i> Consulta de Llamadas
+				<small>Llamadas del C.A.LL.E. 9-1-1</small>
+			</h1>
+		</div>
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="#"><i
+					class="fa fa-phone" aria-hidden="true"></i> Llamadas </a></li>
+			<li class="breadcrumb-item active"><i class="fa fa-search"
+				aria-hidden="true"></i> Consulta</li>
+		</ol>
+
+		<div class="row">
+			<form class="form-inline"
+				action="./listados?action=filtrosBitacoraLlamadas" method="post">
+
+				<h4>
+					<i class="fa fa-filter" aria-hidden="true"></i>
+				</h4>
+				<hr>
+				<div class="form-group espacio-izquierda">
+					<label for="inputFechaInicial" class="control-label"><i
+						class="fa fa-table" aria-hidden="true"></i> fecha inicial</label> <input
+						type="text" class="form-control" id="inputFechaInicial"
+						name="inputFechaInicial"
+						value="<c:out value="${fechaInicial.fechaString}" />"
+						placeholder="dd/mm/aaaa" />
+				</div>
+				<div class="form-group espacio-izquierda">
+					<label for="inputFechaFinal" class="control-label"><i
+						class="fa fa-table" aria-hidden="true"></i> fecha final</label> <input
+						type="text" class="form-control" id="inputFechaFinal"
+						name="inputFechaFinal"
+						value="<c:out value="${fechaFinal.fechaString}" />"
+						placeholder="dd/mm/aaaa" />
+				</div>
+				<div class="form-group espacio-izquierda">
+					<button type="submit" class="btn btn-info pointer">
+						<i class="fa fa-search" aria-hidden="true"></i> Buscar
+					</button>
+				</div>
+
+			</form>
+			<c:if test="${fn:length(llamadas) gt 0}">
+				<button type="button" class="btn btn-primary btn-margin pointer"
+					id="btnImprimirHorarios">
+					<i class="fa fa-file-excel-o"></i> Imprimir tabla
+				</button>
+			</c:if>
+		</div>
+
+		<div id="contenedorTabla" class="row">
+			<c:choose>
+				<c:when test="${fn:length(llamadas) gt 0}">
+					<div class="col-lg-4">
+						<div class="table-responsive rowInicial2" id="divTablaHorarios">
+							<table id="tb_listahorarios0"
+								class="table table-striped table-bordered table-hover table-condensed">
+								<thead>
+									<tr>
+										<th>#</th>
+										<th><i class="fa fa-phone-square" aria-hidden="true"></i>
+											Tipo de llamada</th>
+										<th><i class="fa fa-area-chart" aria-hidden="true"></i>
+											Total</th>
+									</tr>
+								</thead>
+								<tfoot>
+									<tr>
+										<td></td>
+										<td></td>
+										<td></td>
+									</tr>
+								</tfoot>
+								<tbody>
+									<c:set var="i" value="1"></c:set>
+									<c:forEach var="row" items="${llamadas}">
+										<tr>
+											<td><c:out value="${i}" /></td>
+											<td><c:out value="${row.tipoLlamada.nombreTipoLlamada}" /></td>
+											<td><c:out value="${row.totalLlamadas}" /></td>
+										</tr>
+										<c:set var="i" value="${i+1}"></c:set>
+									</c:forEach>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<canvas id="myChart" width="400" height="400"></canvas>
+					</div>
+					<div class="col-lg-4">
+						<canvas id="myChart2" width="400" height="400"></canvas>
+					</div>
+				</c:when>
+				<c:otherwise>
+					<div class="alert alert-info">
+						<strong>Aviso!</strong> SIN DATOS
+						<c:out value="${mensaje}" />
+						<i class="fa fa-file-o"></i>
+					</div>
+				</c:otherwise>
+			</c:choose>
+
+
+		</div>
+	</div>
+	<jsp:include page="../../footer/footer.jsp"></jsp:include>
+
+	<script src="js/jquery-3.1.1.min.js" type="text/javascript"></script>
+	<script src="js/tether.min.js" type="text/javascript"></script>
+	<script src="js/drop.js" type="text/javascript"></script>
+	<script src="js/bootstrap.min.js" type="text/javascript"></script>
+	<script src="js/base/base.js" type="text/javascript"></script>
+	<script src="js/jquery.inputmask.bundle.min.js" type="text/javascript"></script>
+	<script src="js/sweetalert2.min.js" type="text/javascript"></script>
+	<script src="js/jquery.dataTables.min.js" type="text/javascript"></script>
+	<script src="js/dataTables.bootstrap4.min.js" type="text/javascript"></script>
+	<script src="js/moment-with-locales.js" type="text/javascript"></script>
+	<script src="js/jquery-ui.min.js" type="text/javascript"></script>
+	<script src="js/chartJS.js" type="text/javascript"></script>
+	<script src="js/listados/horariosJS.js" type="text/javascript"></script>
+	<c:if test="${fn:length(llamadas) gt 0}">
+		<script>
+			var ctx = document.getElementById("myChart");
+			var myChart = new Chart(ctx, {
+			    type: 'bar',//horizontalBar
+			    data: {
+			        labels: <c:out value="${lblLlamadas}" escapeXml="false"/>,
+			        datasets: [{
+			            label: 'Número de llamadas',
+			            data: <c:out value="${totalesLlamadas}" escapeXml="false"/>,
+			            backgroundColor: [
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)'
+			            ],
+			            borderColor: [
+			                'rgba(255,99,132,1)',
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)'
+			            ],
+			            borderWidth: 1
+			        }]
+			    },
+			    options: {
+			    	scales: {
+			            yAxes: [{
+			                ticks: {
+			                    beginAtZero:true
+			                }
+			            }]
+			        },			    
+				    title: {
+			            display: true,
+			            text: 'Total de llamadas por tipo del <c:out value="${fechaInicial.fechaString}" /> al <c:out value="${fechaFinal.fechaString}" /> (Barras)'
+			        },
+				    layout: {
+			            padding: {
+			                left: 0,
+			                right: 100,
+			                top: 0,
+			                bottom: 10
+			            }
+			        },
+			        legend: {
+			            display: false,
+			            labels: {
+			                fontColor: 'rgb(255, 99, 132)'
+			            }
+			        }
+			    }
+			});
+			var ctx = document.getElementById("myChart2");
+			var myChart = new Chart(ctx, {
+			    type: 'pie',//horizontalBar
+			    data: {
+			        labels: <c:out value="${lblLlamadas}" escapeXml="false"/>,
+			        datasets: [{
+			            label: 'Ocultar grafica',
+			            data: <c:out value="${totalesLlamadas}" escapeXml="false"/>,
+			            backgroundColor: [
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)'
+			            ],
+			            borderColor: [
+			                'rgba(255,99,132,1)',
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)'
+			            ],
+			            borderWidth: 1
+			        }]
+			    },
+			    options: {			    			    
+				    title: {
+			            display: true,
+			            text: 'Total de llamadas por tipo del <c:out value="${fechaInicial.fechaString}" /> al <c:out value="${fechaFinal.fechaString}" /> (Pie)'
+			        },
+				    layout: {
+			            padding: {
+			                left: 0,
+			                right: 100,
+			                top: 0,
+			                bottom: 10
+			            }
+			        },
+			        legend: {
+			            display: true,
+			            labels: {
+			                fontColor: 'rgb(255, 99, 132)'
+			            }
+			        }
+			    }
+			});
+			
+		</script>
+	</c:if>
+	<c:if test="${empty fechaInicial.fechaLD }">
+		<script type="text/javascript">
+				$(function() {
+					$( "#inputFechaInicial" ).val(getDefaultDate());	
+				});
+			</script>
+	</c:if>
+	<c:if test="${empty fechaFinal.fechaLD}">
+		<script type="text/javascript">
+				$(function() {
+					$( "#inputFechaFinal" ).val(getDefaultDate());
+				});
+			</script>
+	</c:if>
+</body>
+</html>

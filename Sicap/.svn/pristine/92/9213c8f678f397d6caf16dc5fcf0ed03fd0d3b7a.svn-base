@@ -1,0 +1,842 @@
+package service.movimientos;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.StandardCopyOption;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.Vector;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
+
+import org.apache.poi.util.IOUtils;
+
+import com.google.gson.Gson;
+
+import dao.ConfigDAO;
+import dao.empleado.EmpleadoDAO;
+import dao.horario.HorarioDAO;
+import dao.item.ItemDAO;
+import dao.listados.ListadosDAO;
+import dao.listados.TipoEstatusDAO;
+import dao.movimientos.MovimientosDAO;
+import dao.movimientos.ordenes.OrdenesDAO;
+import dao.user.UserDAO;
+import dao.user.perfil.PerfilDAO;
+import dto.asignacion.AsignacionDTO;
+import dto.listados.items.ItemDTO;
+import dto.movimientos.MovimientoDTO;
+import dto.movimientos.MovimientoItemDTO;
+import dto.ordenes.DocumentoDTO;
+import dto.ordenes.OrdenDTO;
+import dto.ordenes.OrdenLugarDTO;
+import dto.ordenes.OrdenRadioDTO;
+import dto.ordenes.OrdenTecnicoDTO;
+import herramientas.imagenes.ProcesarImagen;
+
+public class MovimientosService {
+	
+	private EmpleadoDAO empleadoDAO; 
+	private ListadosDAO listadosDAO;
+	private HorarioDAO horarioDAO;
+	private UserDAO userDAO;
+	private ItemDAO itemDAO;
+	private ConfigDAO configDAO;
+	private TipoEstatusDAO tipoEstatusDAO;
+	private PerfilDAO perfilDAO;
+	private ProcesarImagen procesarImagen;
+	private MovimientosDAO movimientosDAO;
+	private OrdenesDAO ordenesDAO;
+	/**
+	 * INICIALIZA LOS COMPONENTES DE LA CLASE
+	 */
+	public MovimientosService(){
+		if(this.getEmpleadoDAO() == null){
+			setEmpleadoDAO(new EmpleadoDAO());
+		}
+		if(this.getListadosDAO() == null){
+			setListadosDAO(new ListadosDAO());
+		}
+		if(this.getHorarioDAO() == null){
+			setHorarioDAO(new HorarioDAO());	
+		}
+		if(this.getUserDAO() == null){		
+			setUserDAO(new UserDAO());
+		}
+		if(this.getItemDAO() == null){
+			this.setItemDAO(new ItemDAO());
+		}
+		if(this.getConfigDAO() == null){
+			this.setConfigDAO(new ConfigDAO());
+		}
+		if(this.getTipoEstatusDAO() == null){
+			this.setTipoEstatusDAO(new TipoEstatusDAO());
+		}
+		if(this.getPerfilDAO() == null){
+			this.setPerfilDAO(new PerfilDAO());
+		}
+		if(this.getProcesarImagen() == null){
+			this.setProcesarImagen(new ProcesarImagen());
+		}	
+		if(this.getMovimientosDAO() == null){
+			this.setMovimientosDAO(new MovimientosDAO());
+		}
+		if(this.getOrdenesDAO() == null){
+			this.setOrdenesDAO(new OrdenesDAO());
+		}
+		
+	}
+	
+	
+	/**
+	 * @return the empleadoDAO
+	 */
+	public EmpleadoDAO getEmpleadoDAO() {
+		return empleadoDAO;
+	}
+
+	/**
+	 * @param empleadoDAO the empleadoDAO to set
+	 */
+	public void setEmpleadoDAO(EmpleadoDAO empleadoDAO) {
+		this.empleadoDAO = empleadoDAO;
+	}
+
+	/**
+	 * @return the listadosDAO
+	 */
+	public ListadosDAO getListadosDAO() {
+		return listadosDAO;
+	}
+
+	/**
+	 * @param listadosDAO the listadosDAO to set
+	 */
+	public void setListadosDAO(ListadosDAO listadosDAO) {
+		this.listadosDAO = listadosDAO;
+	}
+
+	/**
+	 * @return the horarioDAO
+	 */
+	public HorarioDAO getHorarioDAO() {
+		return horarioDAO;
+	}
+
+	/**
+	 * @param horarioDAO the horarioDAO to set
+	 */
+	public void setHorarioDAO(HorarioDAO horarioDAO) {
+		this.horarioDAO = horarioDAO;
+	}
+
+	/**
+	 * @return the userDAO
+	 */
+	public UserDAO getUserDAO() {
+		return userDAO;
+	}
+
+	/**
+	 * @param userDAO the userDAO to set
+	 */
+	public void setUserDAO(UserDAO userDAO) {
+		this.userDAO = userDAO;
+	}
+
+	/**
+	 * @return the itemDAO
+	 */
+	public ItemDAO getItemDAO() {
+		return itemDAO;
+	}
+
+	/**
+	 * @param itemDAO the itemDAO to set
+	 */
+	public void setItemDAO(ItemDAO itemDAO) {
+		this.itemDAO = itemDAO;
+	}
+	
+	/**
+	 * @return the configDAO
+	 */
+	public ConfigDAO getConfigDAO() {
+		return configDAO;
+	}
+
+
+	/**
+	 * @param configDAO the configDAO to set
+	 */
+	public void setConfigDAO(ConfigDAO configDAO) {
+		this.configDAO = configDAO;
+	}
+
+
+	/**
+	 * @return the tipoEstatusDAO
+	 */
+	public TipoEstatusDAO getTipoEstatusDAO() {
+		return tipoEstatusDAO;
+	}
+
+
+	/**
+	 * @param tipoEstatusDAO the tipoEstatusDAO to set
+	 */
+	public void setTipoEstatusDAO(TipoEstatusDAO tipoEstatusDAO) {
+		this.tipoEstatusDAO = tipoEstatusDAO;
+	}
+
+
+	/**
+	 * @return the perfilDAO
+	 */
+	public PerfilDAO getPerfilDAO() {
+		return perfilDAO;
+	}
+
+
+	/**
+	 * @param perfilDAO the perfilDAO to set
+	 */
+	public void setPerfilDAO(PerfilDAO perfilDAO) {
+		this.perfilDAO = perfilDAO;
+	}
+
+
+	/**
+	 * @return the procesarImagen
+	 */
+	public ProcesarImagen getProcesarImagen() {
+		return procesarImagen;
+	}
+
+
+	/**
+	 * @param procesarImagen the procesarImagen to set
+	 */
+	public void setProcesarImagen(ProcesarImagen procesarImagen) {
+		this.procesarImagen = procesarImagen;
+	}
+
+
+	public MovimientosDAO getMovimientosDAO() {
+		return movimientosDAO;
+	}
+
+
+	public void setMovimientosDAO(MovimientosDAO movimientosDAO) {
+		this.movimientosDAO = movimientosDAO;
+	}	
+	
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	public void inicializaJSPConsultaOrdenes(HttpServletRequest request, HttpServletResponse response){
+		Vector<Object> vVehiculos = new Vector<Object>();
+		Vector<Object> vRadios = new Vector<Object>();
+		Vector<Object> vTecnicos = new Vector<Object>();
+		Vector<Object> vLugares = new Vector<Object>();
+		final String _VEHICULOS = "vehiculos";
+		final String _RADIOS = "radios";
+		final String _TECNICOS = "tecnicos";
+		final String _LUGARES = "lugares";
+		vVehiculos = getOrdenesDAO().selectTablaFromOrdenesOrderByNombre(_VEHICULOS);//trae vehiculos
+		vRadios = getOrdenesDAO().selectTablaFromOrdenesOrderByNombre(_RADIOS);//trae RADIOS
+		vTecnicos = getOrdenesDAO().selectTablaFromOrdenesOrderByNombre(_TECNICOS);//trae TECNICOS
+		vLugares = getOrdenesDAO().selectTablaFromOrdenesOrderByNombre(_LUGARES);//trae LUGARES
+		if(vVehiculos != null){
+			if(vVehiculos.size() > 0){
+				request.setAttribute(_VEHICULOS, vVehiculos);
+			}else{
+				System.out.println("el vector de vVehiculos es menor o igual  a 0");
+			}
+		}else{
+			System.out.println("el vector de vVehiculos es menor o igual  a 0");
+		}
+		
+		if(vRadios != null){
+			if(vRadios.size() > 0){
+				request.setAttribute(_RADIOS, vRadios);
+			}else{
+				System.out.println("el vector de vRadios es menor o igual  a 0");
+			}
+		}else{
+			System.out.println("el vector de vRadios es menor o igual  a 0");
+		}
+		if(vTecnicos != null){
+			if(vTecnicos.size() > 0){
+				request.setAttribute(_TECNICOS, vTecnicos);
+			}else{
+				System.out.println("el vector de vTecnicos es menor o igual  a 0");
+			}
+		}else{
+			System.out.println("el vector de vTecnicos es menor o igual  a 0");
+		}
+		if(vLugares != null){
+			if(vLugares.size() > 0){
+				request.setAttribute(_LUGARES, vLugares);
+			}else{
+				System.out.println("el vector de vLugares es menor o igual  a 0");
+			}
+		}else{
+			System.out.println("el vector de vLugares es menor o igual  a 0");
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	public void inicializaModalEditar(HttpServletRequest request, HttpServletResponse response){
+		int orderId = 0;
+		String orderIdSt = request.getParameter("orderId");
+		try{
+			orderId = Integer.parseInt(orderIdSt);
+		}catch (Exception e) {
+
+		}
+		if(orderId > 0){
+			Vector<Object> vOLugares = new Vector<Object>();
+			Vector<Object> vOTecnicos = new Vector<Object>();
+			Vector<Object> vORadios = new Vector<Object>();
+			Vector<Object> vODocumentos = new Vector<Object>();
+			final String _ORDENES_LUGARES = "ordeneslugares";			
+			final String _ORDENES_TECNICOS = "ordenestecnicos";
+			final String _ORDENES_RADIOS = "ordenesradios";
+			final String _DOCUMENTOS = "documentos";			
+			vOLugares = getOrdenesDAO().selectTablaFromOrdenesByOrderId(_ORDENES_LUGARES, orderId);//trae LUGARES
+			vOTecnicos = getOrdenesDAO().selectTablaFromOrdenesByOrderId(_ORDENES_TECNICOS, orderId);//trae TECNICOS
+			vORadios = getOrdenesDAO().selectTablaFromOrdenesByOrderId(_ORDENES_RADIOS, orderId);//trae RADIOS						
+			vODocumentos = getOrdenesDAO().selectTablaFromOrdenesByOrderId(_DOCUMENTOS, orderId);//trae docs
+			ArrayList<Object> obj_arr = new ArrayList<Object>();
+			if(vOLugares != null){
+				if(vOLugares.size() > 0){
+					obj_arr.add(vOLugares);
+				}else{
+					System.out.println("el vector de vOLugares es menor o igual  a 0");
+				}
+			}else{
+				System.out.println("el vector de vOLugares es menor o igual  a 0");
+			}
+
+			if(vOTecnicos != null){
+				if(vOTecnicos.size() > 0){
+					obj_arr.add(vOTecnicos);
+				}else{
+					System.out.println("el vector de vOTecnicos es menor o igual  a 0");
+				}
+			}else{
+				System.out.println("el vector de vOTecnicos es menor o igual  a 0");
+			}
+			if(vORadios != null){
+				if(vORadios.size() > 0){
+					obj_arr.add(vORadios);
+				}else{
+					System.out.println("el vector de vORadios es menor o igual  a 0");
+				}
+			}else{
+				System.out.println("el vector de vORadios es menor o igual  a 0");
+			}
+			if(vODocumentos != null){
+				if(vODocumentos.size() > 0){
+					obj_arr.add(vODocumentos);
+				}else{
+					System.out.println("el vector de vODocumentos es menor o igual  a 0");
+				}
+			}else{
+				System.out.println("el vector de vODocumentos es menor o igual  a 0");
+			}
+
+			Gson gson = new Gson();
+			String tmp = gson.toJson(obj_arr);
+			try {
+				response.getWriter().write(tmp);
+			} catch (IOException e) {			
+				e.printStackTrace();
+			}
+		}else{
+			System.out.println("SIN ORDER ID");
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	public void selectMovimientosAsignacionesItem(HttpServletRequest request, HttpServletResponse response){
+		String empleadoSku = request.getParameter("skuEmpleado");
+		int tipoMovimiento = Integer.parseInt(request.getParameter("moveTypeId"));
+		if(empleadoSku != null && !empleadoSku.isEmpty()){
+			Vector<AsignacionDTO> movs = getMovimientosDAO().selectMovimientosAsignacionesItem(tipoMovimiento);
+			if(movs != null){
+				String json = new Gson().toJson(movs);
+				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+				try {
+					response.getWriter().write(json);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}else{
+				try {
+					response.getWriter().append("-1");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}else{
+			try {
+				response.getWriter().append("-2");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	public void selectMovimientosItems(HttpServletRequest request, HttpServletResponse response){
+		Vector<MovimientoItemDTO> vMovItem = new Vector<MovimientoItemDTO>();
+		int tipoMovimiento = request.getParameter("moveTypeId") != null ? Integer.parseInt(request.getParameter("moveTypeId")) : 0;
+		if(tipoMovimiento > 0){
+			vMovItem = getMovimientosDAO().selectMovimientosItem(tipoMovimiento);
+			if(vMovItem != null){
+				if(vMovItem.size() > 0){
+					request.setAttribute("movimientoItem", vMovItem);
+				}else{
+					System.out.println("el vector de movimientoItem es menor o igual  a 0");
+				}
+			}else{
+				System.out.println("el vector de movimientoItem es menor o igual  a 0");
+			}
+		}else{
+			System.out.println("el tipoMovimiento es menor o igual  a 0");
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	public void selectItemsAsignadosPorTipoItem(HttpServletRequest request, HttpServletResponse response){
+		Vector<AsignacionDTO> vMovItem = new Vector<AsignacionDTO>();
+		int tipoMovimiento = request.getParameter("moveTypeId") != null ? Integer.parseInt(request.getParameter("moveTypeId")) : 0;
+		if(tipoMovimiento > 0){
+			vMovItem = getMovimientosDAO().selectMovimientosAsignacionesItem(tipoMovimiento);
+			if(vMovItem != null){
+				if(vMovItem.size() > 0){
+					request.setAttribute("movimientoItemAsignados", vMovItem);
+				}else{
+					System.out.println("el vector de movimientoItem es menor o igual  a 0");
+				}
+			}else{
+				System.out.println("el vector de movimientoItem es menor o igual  a 0");
+			}
+		}else{
+			System.out.println("el tipoMovimiento es menor o igual  a 0");
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	public void nuevoMovimientoItem(HttpServletRequest request, HttpServletResponse response){
+		MovimientoItemDTO movItem = new MovimientoItemDTO();
+		movItem.getFkIdItem().setIdItem(Integer.parseInt(request.getParameter("itemRadio")));
+		MovimientoDTO movDTO = new MovimientoDTO();
+		movDTO.setSkuMovimiento(Integer.parseInt(request.getParameter("sku_mov")));	
+		movDTO.setComments(request.getParameter("textAreaComment"));
+		movDTO.setFkIdTipoMovimiento(Integer.parseInt(request.getParameter("moveTypeId")));
+		movDTO.setIdMovimiento(getMovimientosDAO().insertMovimientoDTO(movDTO));		
+		if(movDTO.getIdMovimiento() > 0){
+			movItem.getFkIdMovimiento().setIdMovimiento(movDTO.getIdMovimiento());
+			int res = getMovimientosDAO().insertMovimientoItemDTO(movItem);			
+			try {
+				response.getWriter().append(String.valueOf(res));
+			} catch (IOException e) {			
+				e.printStackTrace();
+			}
+		}else{
+			try {
+				response.getWriter().append(String.valueOf(0));
+			} catch (IOException e) {			
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	public void consultaOrdenesService(HttpServletRequest request, HttpServletResponse response){
+		Vector<OrdenDTO> ordenes = new Vector<OrdenDTO>();		
+		ordenes = getOrdenesDAO().selectOrdenes();
+		if(ordenes != null){
+			if(ordenes.size() > 0){
+				request.setAttribute("ordenes", ordenes);
+			}else{
+				System.out.println("el vector de movimientoItem es menor o igual  a 0");
+			}
+		}else{
+			System.out.println("el vector de movimientoItem es menor o igual  a 0");
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	public void procesaFormOrdenesService(HttpServletRequest request, HttpServletResponse response){
+		OrdenDTO ordenDTO = new OrdenDTO();
+		String campo = "";
+		String fieldsMissing = null;
+		campo = "field1";
+		if(request.getParameter(campo) != null && !request.getParameter(campo).isEmpty())
+		{			
+			System.out.println("field1 : " + request.getParameter(campo));
+			ordenDTO.setOrderId(Integer.parseInt(request.getParameter(campo)));
+		}else{
+			fieldsMissing += campo;
+		}
+		campo = "field2";
+		if(request.getParameter(campo) != null && !request.getParameter(campo).isEmpty())
+		{	
+			Locale loc = new Locale("es","MX");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", loc);
+	        LocalDate date = LocalDate.parse(request.getParameter(campo), formatter);
+			ordenDTO.getFecha().setFechaString(campo);
+			ordenDTO.getFecha().setFechaLD(date);
+			ordenDTO.getFecha().setFechaDateSQL(Date.valueOf(ordenDTO.getFecha().getFechaLD()));
+		}else{
+			fieldsMissing += campo;
+		}
+		campo = "field3";
+		if(request.getParameter(campo) != null && !request.getParameter(campo).isEmpty())
+		{			
+			ordenDTO.setNoOficio(request.getParameter(campo));
+		}else{
+			fieldsMissing += campo;
+		}
+		campo = "field4";
+		if(request.getParameter(campo) != null && !request.getParameter(campo).isEmpty())
+		{			
+			Locale loc = new Locale("es","MX");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", loc);
+	        LocalDate date = LocalDate.parse(request.getParameter(campo), formatter);
+			ordenDTO.getFechaSalida().setFechaString(date.toString());
+			ordenDTO.getFechaSalida().setFechaLD(date);
+			ordenDTO.getFechaSalida().setFechaDateSQL(Date.valueOf(ordenDTO.getFechaSalida().getFechaLD()));
+		}else{
+			fieldsMissing += campo;
+		}
+		campo = "field5";
+		if(request.getParameter(campo) != null && !request.getParameter(campo).isEmpty())
+		{			
+			Locale loc = new Locale("es","MX");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", loc);
+	        LocalDate date = LocalDate.parse(request.getParameter(campo), formatter);
+			ordenDTO.getFechaLlegada().setFechaString(date.toString());
+			ordenDTO.getFechaLlegada().setFechaLD(date);
+			ordenDTO.getFechaLlegada().setFechaDateSQL(Date.valueOf(ordenDTO.getFechaLlegada().getFechaLD()));
+		}else{
+			fieldsMissing += campo;
+		}
+		campo = "field6";
+		if(request.getParameter(campo) != null && !request.getParameter(campo).isEmpty())
+		{			
+			ordenDTO.getVehiculoDTO().setVehiculoId(Integer.parseInt(request.getParameter(campo)));
+		}else{
+			fieldsMissing += campo;
+		}
+		campo = "field7";
+		if(request.getParameter(campo) != null && !request.getParameter(campo).isEmpty())
+		{			
+			ordenDTO.getTecnicoDTO().setTecnicoId(Integer.parseInt(request.getParameter(campo)));
+		}else{
+			fieldsMissing += campo;
+		}
+		//<----TERMINA PARTE 1 DEL FORM---->
+		//COMIENZA PARTE 2 -->(LUGARES)<--
+		
+		campo = "fieldLugares[]";
+		Vector<OrdenLugarDTO> ordenLugarDTOs = new Vector<OrdenLugarDTO>();
+		if(request.getParameterValues(campo) != null && request.getParameterValues(campo).length > 0)
+		{				
+			if(request.getParameterValues("fieldCommentsLugares[]") != null && request.getParameterValues("fieldCommentsLugares[]").length > 0)
+			{
+				String actividadesLugares[]; actividadesLugares = request.getParameterValues("fieldCommentsLugares[]");				
+				int i=0;
+				String[] lugaresCombo = request.getParameterValues(campo);			
+				for (String lugar : lugaresCombo) {
+					OrdenLugarDTO ordenLugar = new OrdenLugarDTO();
+					ordenLugar.setOrdenDTO(ordenDTO);
+					ordenLugar.getLugarDTO().setLugarId(Integer.parseInt(lugar));
+					ordenLugar.setActividad(actividadesLugares[i]);					
+					ordenLugarDTOs.add(ordenLugar);					
+					i++;
+				}
+			}else{
+				fieldsMissing += "fieldCommentsLugares[]";
+			}			
+			
+		}else{
+			fieldsMissing += campo;
+		}
+		campo = "fieldTec[]";
+		Vector<OrdenTecnicoDTO> ordenTecnicoDTOs = new Vector<OrdenTecnicoDTO>();
+		if(request.getParameterValues(campo) != null && request.getParameterValues(campo).length > 0)
+		{
+			String[] tecnicosCombo = request.getParameterValues(campo);			
+			for (String tecnicoId : tecnicosCombo) {
+				if(tecnicoId != null && !tecnicoId.isEmpty()){
+					OrdenTecnicoDTO ordenTecnicoDTO = new OrdenTecnicoDTO();
+					ordenTecnicoDTO.setOrdenDTO(ordenDTO);
+					ordenTecnicoDTO.getTecnicoDTO().setTecnicoId(Integer.parseInt(tecnicoId));
+					ordenTecnicoDTOs.add(ordenTecnicoDTO);
+				}else{
+					System.out.println("tecnicoId VACIO!");
+				}
+				
+			}			
+		}else{
+			fieldsMissing += campo;
+		}
+		
+		campo = "fieldRad[]";
+		Vector<OrdenRadioDTO> ordenRadioDTOs = new Vector<OrdenRadioDTO>();
+		if(request.getParameterValues(campo) != null && request.getParameterValues(campo).length > 0)
+		{
+			String[] radiosIdCombo = request.getParameterValues(campo);			
+			for (String radioId : radiosIdCombo) {
+				OrdenRadioDTO ordenRadioDTO = new OrdenRadioDTO();				
+				ordenRadioDTO.getRadioDTO().setRadioId(Integer.parseInt(radioId));
+				ordenRadioDTOs.add(ordenRadioDTO);
+			}			
+		}else{
+			fieldsMissing += campo;
+		}
+		
+		 Collection<Part> fileParts = null;
+		try {
+			fileParts = request.getParts();
+		} catch (IOException | ServletException e1) {			
+			e1.printStackTrace();
+			System.out.println("error al recuperar las partes");
+		}
+		Vector<DocumentoDTO> documentoDTOs = new Vector<DocumentoDTO>();
+		if(fileParts != null){	
+			if(fileParts.size() > 0){
+				int i = 0;
+				for(Part filePart : fileParts){
+					if(filePart != null){
+						String fileName = filePart.getSubmittedFileName(); // MSIE fix.
+						if(fileName != null && !fileName.isEmpty()){					
+							String os = System.getProperty("os.name").toLowerCase();
+							System.out.println("OS:" + System.getProperty("os.name").toLowerCase());
+							String rutaResp = "";
+							if(os.contains("linux")){
+								rutaResp = "/home/jbritop/archivos/complementos_ordenes/";///home/jbritop/archivos/horarios
+							}else{
+								rutaResp = "C:/pruebas/archivos/ordenes/";
+							}
+							InputStream fileContent = null;
+							try {
+								fileContent = filePart.getInputStream();
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+							DocumentoDTO doc = new DocumentoDTO();
+							doc.setOrdenDTO(ordenDTO);				
+							java.sql.Date sqlDate = new java.sql.Date(System.currentTimeMillis());
+							doc.getFechaHoraCargaDTO().setFechaHoraSql(sqlDate);
+							try {
+								doc.setArchivoEnByteArray(IOUtils.toByteArray(fileContent));
+							} catch (IOException e2) {							
+								e2.printStackTrace();
+							}
+							File targetFile = new File(rutaResp+i+"_"+fileName);
+							try {
+								java.nio.file.Files.copy(
+										fileContent, 
+										targetFile.toPath(), 
+										StandardCopyOption.REPLACE_EXISTING);
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+							
+							//IOUtils.closeQuietly(fileContent);						
+							doc.setNombreArchivo(targetFile.getName());
+							System.out.println("archivo " + i + ": " + targetFile.getName());
+							doc.setDescripcion(rutaResp);
+							documentoDTOs.add(doc);
+							i++;
+						}else{
+							System.out.print("filePart no es archivo");
+						}
+					}else{
+						System.out.print("filePart == null");
+					}
+				}
+			}else{
+				System.out.print("filePart <= 0");
+			}
+		}else{
+			System.out.print("filePart == null");
+		}
+		int res = 0;
+		if(ordenDTO.getOrderId() <= 0){
+			try {
+				res = getOrdenesDAO().insertOrder(ordenDTO, ordenLugarDTOs, ordenTecnicoDTOs, ordenRadioDTOs, documentoDTOs);				
+			} catch (SQLException e) {				
+				e.printStackTrace();
+			}			
+		}else{
+			try {
+				res = getOrdenesDAO().updateOrder(ordenDTO, ordenLugarDTOs, ordenTecnicoDTOs, ordenRadioDTOs, documentoDTOs);				
+			} catch (SQLException e) {				
+				e.printStackTrace();
+			}
+		}
+		try {
+			response.getWriter().append(String.valueOf(res));
+		} catch (IOException e) {			
+			e.printStackTrace();
+		}
+		System.out.println(fieldsMissing);
+		
+		
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	public void selectItemsPorTipoItem(HttpServletRequest request, HttpServletResponse response){
+		Vector<ItemDTO> vItemRad = new Vector<ItemDTO>();
+		int tipoMovimiento = Integer.parseInt(request.getParameter("moveTypeId"));
+		vItemRad = getItemDAO().selectItemsSinMovimiento(tipoMovimiento);
+		if(vItemRad != null){
+			if(vItemRad.size() > 0){
+				request.setAttribute("listado_itemRadio", vItemRad);
+			}else{
+				System.out.println("el vector de movimientoItem es menor o igual  a 0");
+			}
+		}else{
+			System.out.println("el vector de movimientoItem es menor o igual  a 0");
+		}
+		
+	}
+	
+	
+	/* 
+	 * @param request
+	 * @param response
+	 */
+	public void selectMovimientosItemsTodos(HttpServletRequest request, HttpServletResponse response){
+		Vector<ItemDTO> vItemRad = new Vector<ItemDTO>();
+		int tipoMovimiento = Integer.parseInt(request.getParameter("moveTypeId"));
+		vItemRad = getItemDAO().selectItemsSinMovimiento(tipoMovimiento);
+		if(vItemRad != null){
+			if(vItemRad.size() > 0){
+				request.setAttribute("listado_itemRadio", vItemRad);
+			}else{
+				System.out.println("el vector de movimientoItem es menor o igual  a 0");
+			}
+		}else{
+			System.out.println("el vector de movimientoItem es menor o igual  a 0");
+		}
+		
+	}
+	
+	/* 
+	 * @param request
+	 * @param response
+	 */
+	public void selectMovimientosItemsPorAsignar(HttpServletRequest request, HttpServletResponse response){
+		Vector<ItemDTO> vItemRad = new Vector<ItemDTO>();
+		int tipoMovimiento = Integer.parseInt(request.getParameter("moveTypeId"));
+		vItemRad = getItemDAO().selectItemsSinMovimiento(tipoMovimiento);
+		if(vItemRad != null){
+			if(vItemRad.size() > 0){
+				request.setAttribute("listado_itemRadio", vItemRad);
+			}else{
+				System.out.println("el vector de movimientoItem es menor o igual  a 0");
+			}
+		}else{
+			System.out.println("el vector de movimientoItem es menor o igual  a 0");
+		}
+		
+	}
+	
+	/* 
+	 * @param request
+	 * @param response
+	 */
+	public void selectMovimientosDisponiblesParaItems(HttpServletRequest request, HttpServletResponse response){
+		Vector<MovimientoDTO> vMovimientosDisponibles = new Vector<MovimientoDTO>();
+		int tipoMovimiento = Integer.parseInt(request.getParameter("moveTypeId"));
+		vMovimientosDisponibles = getMovimientosDAO().selectMovimientosDisponiblesSinItems(tipoMovimiento);
+		if(vMovimientosDisponibles != null){
+			if(vMovimientosDisponibles.size() > 0){
+				request.setAttribute("movsDisp", vMovimientosDisponibles);
+			}else{
+				System.out.println("el vector de movimientoItem es menor o igual  a 0");
+			}
+		}else{
+			System.out.println("el vector de movimientoItem es menor o igual  a 0");
+		}
+		
+	}
+
+
+	/**
+	 * @return the ordenesDAO
+	 */
+	public OrdenesDAO getOrdenesDAO() {
+		return ordenesDAO;
+	}
+
+
+	/**
+	 * @param ordenesDAO the ordenesDAO to set
+	 */
+	public void setOrdenesDAO(OrdenesDAO ordenesDAO) {
+		this.ordenesDAO = ordenesDAO;
+	}
+	
+	
+	
+}

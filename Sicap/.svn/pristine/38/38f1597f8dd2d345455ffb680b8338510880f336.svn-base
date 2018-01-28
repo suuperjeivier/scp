@@ -1,0 +1,146 @@
+package service.config;
+
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import dao.ConfigDAO;
+import dto.user.menu.MenuDTO;
+
+public class ConfigService {
+	private ConfigDAO configDAO;
+	
+	public ConfigService(){
+		if(this.getConfigDAO() == null){
+			setConfigDAO(new ConfigDAO());		
+		}
+	}
+	
+	public void consultarMenusService(HttpServletRequest request, HttpServletResponse response){
+		
+		request.setAttribute("menus", getConfigDAO().selectMenus()); 
+	}
+	
+	public void inicializaLoginScreen(HttpServletRequest request, HttpServletResponse response){
+		HttpSession session = request.getSession();
+		session.setAttribute("titulo", getConfigDAO().selectConfigSistema());
+	}
+	
+	public void nuevoMenuService(HttpServletRequest request, HttpServletResponse response){
+		MenuDTO menuNuevo = new MenuDTO();			
+		try{
+			if(request.getParameter("idMenuHidden") != null && request.getParameter("idMenuHidden").length() > 0){
+				//if(HerramientasResultSet.tryParse(request.getParameter("skuEmpleadoHidden")) != null){
+					menuNuevo.setIdApp(Integer.parseInt(request.getParameter("idMenuHidden")));
+				//}else{
+					//TODO add error
+				//}
+				
+			}
+			if(request.getParameter("nombreMenu") != null){
+				menuNuevo.setNombreApp(request.getParameter("nombreMenu"));
+			}
+			if(request.getParameter("descripcionMenu") != null){
+				menuNuevo.setDescApp(request.getParameter("descripcionMenu"));
+			}
+			if(request.getParameter("urlMenu") != null){
+				menuNuevo.setUrlApp(request.getParameter("urlMenu"));
+			}
+			if(request.getParameter("iconoMenu") != null){
+				menuNuevo.setIconoApp(request.getParameter("iconoMenu"));
+			}
+			if(request.getParameter("indexMenu") != null){
+				menuNuevo.setIndexApp(Double.parseDouble(request.getParameter("indexMenu")));
+			}
+			if(request.getParameter("statusMenu") != null){
+				if(request.getParameter("statusMenu").equals("on")){
+
+					menuNuevo.setStatusApp(1);
+				}else{
+					menuNuevo.setStatusApp(0);
+				}
+
+			}
+		}catch(Exception error){
+			System.out.println(error);
+			try {
+				response.getWriter().append("-2");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		if (menuNuevo.getIdApp() > 0){
+			int editar = getConfigDAO().actualizarMenu(menuNuevo);
+			if(editar > 0){
+				try {
+					response.getWriter().append("1");
+				} catch (IOException e) {				
+					e.printStackTrace();
+				}		
+			}else if(editar == 0){
+				System.out.println("Error en databasegateway, nuevoMenuService: editaMenu");
+				try {
+					response.getWriter().append("0");
+				} catch (IOException e) {				
+					e.printStackTrace();
+				}
+			}else{
+				System.out.println("Error en ConfigDAO, nuevoMenuService: editaMenu");
+				try {
+					response.getWriter().append("-1");
+				} catch (IOException e) {				
+					e.printStackTrace();
+				}
+			}
+		}else{
+			int res = getConfigDAO().insertaNuevoMenu(menuNuevo);
+			if(res > 0){
+				try {
+					response.getWriter().append("1");
+				} catch (IOException e) {				
+					e.printStackTrace();
+				}		
+			}else if(res == 0){
+				System.out.println("Error en databasegateway, nuevoMenuService: insertaNuevoMenu");
+				try {
+					response.getWriter().append("0");
+				} catch (IOException e) {				
+					e.printStackTrace();
+				}
+			}else{
+				System.out.println("Error en ConfigDAO, nuevoMenuService: insertaNuevoMenu");
+				try {
+					response.getWriter().append("-1");
+				} catch (IOException e) {				
+					e.printStackTrace();
+				}
+			}
+		}
+		/*if(request.getParameter("existeCalle") != null){
+			boolean existeCalle = false;
+			existeCalle = Boolean.parseBoolean(request.getParameter("existeCalle")); 
+			if(!existeCalle){
+				listadosDAO.insertaCalleNueva(calleDTO);
+			}
+		}*/
+
+	}
+
+	/**
+	 * @return the configDAO
+	 */
+	private ConfigDAO getConfigDAO() {
+		return configDAO;
+	}
+
+	/**
+	 * @param configDAO the configDAO to set
+	 */
+	private void setConfigDAO(ConfigDAO configDAO) {
+		this.configDAO = configDAO;
+	}
+	
+}

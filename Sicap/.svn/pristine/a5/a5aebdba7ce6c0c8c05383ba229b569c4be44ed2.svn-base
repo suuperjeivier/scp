@@ -1,0 +1,226 @@
+	var close = false;
+	var nuevoGlobal = -1;	
+	var tabla = document.getElementById("tb_lista"+elementos);
+    var tablaExiste = document.getElementById("divTabla"+elementos).contains(tabla);
+	if(tablaExiste){
+		$("#tb_lista"+elementos).DataTable({
+				fixedHeader: true,
+				 "language": {
+		                "url": "./js/dataTables.spanish.lang.json"
+		            }
+			});
+	}
+	
+/*	 $("#btnImprimir"+elementos).click(function(e) {
+		 window.open('data:application/vnd.ms-excel,' + encodeURIComponent($('#divTabla'+elementos).html()));
+		 e.preventDefault();
+	 });*/
+	
+	$('#modal'+elementos).on('show.bs.modal', function (event) {
+		var button = $(event.relatedTarget);
+		var nuevo = button.data('new');
+		var modal = $(this);	
+		nuevoGlobal = nuevo;
+		if(nuevo == 0){			
+			var field1 = button.data('field1');
+			var field2 = button.data('field2');
+			var field3 = button.data('field3');
+			var field4 = button.data('field4');
+			var field5 = button.data('field5');
+			var field6 = button.data('field6');
+			var field7 = button.data('field7');
+			modal.find('.modal-title').text('EDITAR '+elemento);	
+			modal.find(".modal-body #field1").val(field1);
+			modal.find(".modal-body #field2").val(field2);
+			if($('#field3').is(':checkbox')){
+				if(field3==1){
+				modal.find(".modal-body #field3").prop("checked",true);
+				}else{
+				modal.find(".modal-body #field3").prop("checked",false);
+				}
+			}else {
+				modal.find(".modal-body #field3").val(field3);
+			}
+			modal.find(".modal-body #field4").val(field4);
+			modal.find(".modal-body #field5").val(field5);
+			if(field6 != '4'){
+				$('#divHiddenPolizaExterna :input').prop('disabled', true);
+				$('#divHiddenPolizaExterna').hide();
+			}else{
+				$('#divHiddenPolizaExterna :input').prop('disabled', false);
+				$('#divHiddenPolizaExterna').slideDown('slow');
+				
+			}
+			if($('#field6').is(':checkbox')){
+				if(field6==1){
+				modal.find(".modal-body #field6").prop("checked",true);
+				}else{
+				modal.find(".modal-body #field6").prop("checked",false);
+				}
+			}else {
+				modal.find(".modal-body #field6").val(field6);
+			}
+			if($('#field7').is(':checkbox')){
+				if(field7==1){
+				modal.find(".modal-body #field7").prop("checked",true);
+				}else{
+				modal.find(".modal-body #field7").prop("checked",false);
+				}
+			}else {
+				modal.find(".modal-body #field7").val(field7);
+			}
+		}else{		
+			modal.find('.modal-title').text('NUEVO '+elemento);
+		}
+	});	
+	
+	$('#field8').on('change', function() {
+		  if(this.value == 'otros'){			
+			  $('#field5').prop('readonly', false);			  
+			  $('#field5').focus();
+		  }else{
+			  if(!$('#field5').is('[readonly]')){
+				  $('#field5').val('');
+				  $('#field5').prop('readonly', true);				  
+			  }else{
+				  $('#field5').val(''); 
+			  }
+		  }
+	});
+	
+	$('#modal'+elementos).on('hide.bs.modal', function(e){			
+		swal({
+			title: 'Desea descartar los datos del '+elemento+'?',
+			text: "Se dispone a descartar los datos del "+elemento+"!",
+			type: 'question',
+			showCancelButton: true,		  
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Si, descartarlos!',
+			cancelButtonText: 'No, espera!',
+			confirmButtonClass: 'btn btn-success',
+			cancelButtonClass: 'btn btn-danger',   			
+			showLoaderOnConfirm: true,		 
+			preConfirm: function () {
+				return new Promise(function (resolve, reject) {
+					$('#form'+elemento).trigger("reset");
+					
+					resolve();
+				})
+			},
+			allowOutsideClick: false
+		}).then(function () {
+			console.log("Terminado!");
+
+		}, function (dismiss) {
+			// dismiss can be 'cancel', 'overlay',
+			// 'close', and 'timer'
+			if (dismiss === 'cancel') {
+				swal(	'Detenido',
+						'Puede volver a revisar los datos',
+				'error');
+				$("#modal"+elementos).modal('toggle');					
+			}
+		}).catch(swal.noop);		
+
+});	
+	
+ 
+	$('#form'+elemento).on('submit',function(event){
+		event.preventDefault() ;
+		event.stopPropagation();
+		
+		try{
+			swal({
+				title: 'Desea guardar los datos del ' + elemento + '?',
+				text: "Se dispone a guardar los datos del "+ elemento + "!",
+				type: 'question',
+				showCancelButton: true,		  
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Si, guardarlo!',
+				cancelButtonText: 'No, espera!',
+				confirmButtonClass: 'btn btn-success',
+				cancelButtonClass: 'btn btn-danger',   			
+				showLoaderOnConfirm: true,		 
+				preConfirm: function () {
+					return new Promise(function (resolve, reject) {
+						var action = "";						
+						if (nuevoGlobal == 0){
+							action = "nuevoActualizar"+elementos;
+						}else{
+							action = "nuevoActualizar"+elementos;							
+						}
+						$.ajax({
+							url: "./config?action=" + action,
+							data: $('#form'+elemento).serialize(),		  
+							success: function(data){
+								if(data == '1'){
+									$('#form'+elemento)[0].reset();	
+									$('#modal'+elementos).modal('toggle');
+									swal({
+										type: 'success',
+										title: 'Correcto!',
+										html: elemento + ' guardado!'
+									});
+									setTimeout(function(){ 
+										location.reload();
+									}, 
+									1000);
+
+								}else{
+									swal({
+										type: 'error',
+										title: 'Error!',
+										html: elemento + ' no guardado'
+									});
+								}
+							},
+							error: function(data){
+								var alertError = '<div class="alert alert-danger"><strong>Error!</strong> '+data.text+'. </div>';
+								$("#initRow").html(alertError);
+								swal({
+									type: 'error',
+									title: elemento + ' no guardado!',
+									html: elemento + ' no guardado'
+								})
+							},
+							complete: function(xhr, status){	
+								var alertSuccess = '<div class="alert alert-success"><strong>Correcto!</strong> Horario guardado correctamente!.</div>';
+								var alertError = '<div class="alert alert-danger"><strong>Error!</strong> '+xhr.text+'. </div>';
+								if(status != 'error'){
+									$("#initRow").html(alertSuccess);	
+								}else{
+									$("#initRow").html(alertError);	
+								}								
+								console.log(xhr);
+							}
+						});
+					})
+				},
+				allowOutsideClick: false
+			}).then(function () {
+
+			}, function (dismiss) {
+				// dismiss can be 'cancel', 'overlay',
+				// 'close', and 'timer'
+				if (dismiss === 'cancel') {
+					swal(	'Detenido',
+							'Puede volver a revisar los datos',
+					'error');
+				}
+			}).catch(swal.noop);
+		} catch (e) {
+			throw new Error(e.message);
+		}
+	});
+	
+	
+	 $("#btnImprimir"+elementos).click(function(e) {
+		 window.open('data:application/vnd.ms-excel,' + encodeURIComponent($('#divTabla'+elementos).html()));
+		 e.preventDefault();
+	 });
+	
+	
+	
+	

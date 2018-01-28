@@ -1,0 +1,33 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Redirect | Wait...</title>
+<link rel="manifest" href="./web_app_manifest.json">
+<script src="./js/jquery-3.1.1.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+		$(function() {  
+			if ('serviceWorker' in navigator) {
+				  window.addEventListener('load', function() {
+				    navigator.serviceWorker.register('./sw.js').then(function(registration) {
+				      // Registration was successful
+				      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+				    }).catch(function(err) {
+				      // registration failed :(
+				      console.log('ServiceWorker registration failed: ', err);
+				    });
+				  });
+				}
+		});
+		</script>
+</head>
+<body>
+	<%  String redirectURL = "./login?action=try";
+	    	response.sendRedirect(redirectURL);
+	    %>
+
+</body>
+
+</html>

@@ -1,0 +1,122 @@
+package dao.user.perfil;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Vector;
+
+import dao.DatabaseGateway;
+import dto.user.perfil.PerfilDTO;
+import herramientas.herrramientasrs.HerramientasResultSet;
+
+public class PerfilDAO {
+	private DatabaseGateway database = null;
+	private HerramientasResultSet herramientasResultSet;
+
+		public PerfilDAO(){
+			if(this.database == null){
+				this.database = new DatabaseGateway();
+			}
+			if(this.herramientasResultSet == null){
+				this.herramientasResultSet = new HerramientasResultSet();
+			}
+			InitializeComponents();		
+		}
+		
+		public void InitializeComponents(){
+			
+		}
+		
+		/**
+		 * Selecciona todos los usaurios en la tabla
+		 * @return Vector<UserDTO>
+		 */
+		public Vector<PerfilDTO> selectPerfiles(){
+			Vector<PerfilDTO> perfiles = null;			
+				if(database.openDatabase()){
+					System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+					ResultSet rs = null;
+					String query = "SELECT * FROM sec_groups;";
+					try {
+						rs = database.executeQuery(query);
+					} catch (SQLException e) {					
+						e.printStackTrace();
+					}
+					try {
+						if(rs != null){
+							perfiles = new Vector<PerfilDTO>();
+							while(rs.next()){
+								PerfilDTO perfil = herramientasResultSet.inicializaPerfilDTO(rs);
+								if(perfil != null){
+									perfiles.add(perfil);
+								}
+							}
+							try{
+								rs.close();
+							}catch (Exception e) {
+								e.printStackTrace();
+							}	
+						}else{
+							System.out.println("rs == nullo en selectPerfiles");
+						}
+					} catch (SQLException e) {					
+						e.printStackTrace();
+					}
+					if(database.closeDatabase()){
+						System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+					}else{
+						System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+					}
+				}else{
+					System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+				}
+			
+			return perfiles;	
+		}
+		
+		/**
+		 * Selecciona todos los usaurios en la tabla
+		 * @return Vector<UserDTO>
+		 */
+		public Vector<PerfilDTO> selectPerfilesPorStatus(int status){
+			Vector<PerfilDTO> perfiles = null;			
+				if(database.openDatabase()){
+					System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+					ResultSet rs = null;
+					String query = "SELECT * FROM sec_groups WHERE " + status + ";";
+					try {
+						rs = database.executeQuery(query);
+					} catch (SQLException e) {					
+						e.printStackTrace();
+					}
+					try {
+						if(rs != null){
+							perfiles = new Vector<PerfilDTO>();
+							while(rs.next()){
+								PerfilDTO perfil = herramientasResultSet.inicializaPerfilDTO(rs);
+								if(perfil != null){
+									perfiles.add(perfil);
+								}
+							}
+							try{
+								rs.close();
+							}catch (Exception e) {
+								e.printStackTrace();
+							}	
+						}else{
+							System.out.println("rs == nullo en selectUserPorUsernameAndPassword");
+						}
+					} catch (SQLException e) {					
+						e.printStackTrace();
+					}
+					if(database.closeDatabase()){
+						System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+					}else{
+						System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+					}
+				}else{
+					System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+				}
+			
+			return perfiles;	
+		}
+}

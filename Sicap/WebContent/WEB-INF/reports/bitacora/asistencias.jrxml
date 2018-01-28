@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
+<!-- 2017-09-07T09:07:19 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="asistencias" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="824fc326-e9d1-4f73-896a-1fdacf76115e">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="sicae"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="ireport.jasperserver.url" value="http://localhost:8081/jasperserver-pro/"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin|C4_TABASCO"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/asistencias"/>
+	<parameter name="CONTEXT" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="empleadoId" class="java.lang.Integer">
+		<parameterDescription><![CDATA[Id del empleado]]></parameterDescription>
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT db_sicae.tb_ct_bitacora.* , tb_tipos.status_string AS tipo_reg, CONCAT(db_sicae.tb_empleados.Nombre, ' ', db_sicae.tb_empleados.Ap_paterno, ' ', db_sicae.tb_empleados.Ap_materno) AS nombre_empleado
+FROM db_sicae.tb_ct_bitacora
+	LEFT JOIN db_sicae.tb_tipos_estatus AS tb_tipos ON 
+	 db_sicae.tb_ct_bitacora.tipo = tb_tipos.status_int 
+	 LEFT JOIN db_sicae.tb_empleados ON db_sicae.tb_ct_bitacora.fk_id_empleado = db_sicae.tb_empleados.Sku_empleado
+WHERE tb_tipos.aplicacion = 'bitacora' AND db_sicae.tb_empleados.Sku_empleado = +$P{empleadoId}]]>
+	</queryString>
+	<field name="id_bitacora" class="java.lang.Integer"/>
+	<field name="fk_id_empleado" class="java.lang.Integer"/>
+	<field name="Hora" class="java.sql.Time"/>
+	<field name="Fecha" class="java.sql.Date"/>
+	<field name="tipo" class="java.lang.Integer"/>
+	<field name="status" class="java.lang.Integer"/>
+	<field name="fecha_insercion" class="java.sql.Date"/>
+	<field name="hora_insercion" class="java.sql.Time"/>
+	<field name="fecha_actualizacion" class="java.sql.Date"/>
+	<field name="hora_actualizacion" class="java.sql.Time"/>
+	<field name="fk_id_usuario_insercion" class="java.lang.Integer"/>
+	<field name="fk_id_usuario_actualizacion" class="java.lang.Integer"/>
+	<field name="fk_id_dispositivo" class="java.lang.Integer"/>
+	<field name="tipo_reg" class="java.lang.String"/>
+	<field name="nombre_empleado" class="java.lang.String"/>
+	<sortField name="fk_id_empleado"/>
+	<sortField name="Fecha"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="43" splitType="Stretch">
+			<image>
+				<reportElement x="10" y="0" width="110" height="40" uuid="84ed10a7-be44-42a6-b761-8cc15f20cc5c"/>
+				<imageExpression><![CDATA[$P{CONTEXT}+"reports/img/logo_segob.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="130" y="0" width="390" height="20" uuid="c24f3452-b290-4bf5-bea4-72a743c3726d"/>
+				<box padding="2">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<text><![CDATA[REPORTE DE BITACORA GENERAL]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="4" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="24" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="30" height="20" uuid="c154b9ba-0c32-4873-b600-7c5ab3ffd896"/>
+				<text><![CDATA[#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="450" y="0" width="100" height="20" uuid="786ffa6b-711b-4d77-88dc-e56f6f3add10"/>
+				<text><![CDATA[Hora]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="340" y="0" width="100" height="20" uuid="8e85c1a9-903d-42dd-a834-f9a19715afdf"/>
+				<text><![CDATA[Fecha]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="220" y="0" width="107" height="20" uuid="c0c34366-6698-474a-b300-224351993274"/>
+				<text><![CDATA[tipo_reg]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="40" y="0" width="160" height="20" uuid="05999134-6c7e-455e-8dcb-e4e5eff803f1"/>
+				<text><![CDATA[nombre_empleado]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="30" height="20" uuid="f551a444-ee66-4510-b3f6-45d0719ce5dc"/>
+				<textFieldExpression><![CDATA[$F{fk_id_empleado}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="0" width="107" height="21" uuid="4c180390-5c8a-448a-96e5-7e8f3b8b92a2"/>
+				<textFieldExpression><![CDATA[$F{tipo_reg}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="340" y="0" width="100" height="20" uuid="3f6f06e4-b21a-4c18-b0d1-5f0e9b6b3795"/>
+				<textFieldExpression><![CDATA[$F{Fecha}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="450" y="0" width="100" height="21" uuid="77787ee1-f23f-4535-be1d-e83c5f012a13"/>
+				<textFieldExpression><![CDATA[$F{Hora}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="0" width="160" height="19" uuid="48d18fba-2468-469b-8966-b7f1648028ff"/>
+				<textFieldExpression><![CDATA[$F{nombre_empleado}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="51" splitType="Stretch">
+			<line>
+				<reportElement x="1" y="21" width="559" height="1" uuid="0aa03dd3-558b-4da1-b24a-1afc846abc1d"/>
+			</line>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

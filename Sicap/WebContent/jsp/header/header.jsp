@@ -1,0 +1,271 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<c:if test="${user == null}">
+	<c:redirect url="./" />
+</c:if>
+
+<c:set var="root" value="${pageContext.request.contextPath}"></c:set>
+<style>
+<!--
+.navbar-login {
+	width: 305px;
+	padding: 10px;
+	padding-bottom: 0px;
+}
+
+.navbar-login-session {
+	padding: 10px;
+	padding-bottom: 0px;
+	padding-top: 0px;
+}
+
+.icon-size {
+	font-size: 87px;
+}
+-->
+</style>
+
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+	<!-- navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top -->
+	<button class="navbar-toggler navbar-toggler-right" type="button"
+		data-toggle="collapse" data-target="#navbarsExampleDefault"
+		aria-controls="navbarsExampleDefault" aria-expanded="false"
+		aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<a class="navbar-brand" href="${root}/login?action=doExit"> <img
+		src="<c:out value='${configSistema.imagenSistemaBase64}' />"
+		id="logo_sistema"
+		width="<c:out value='${configSistema.widthLogoSistema}' />"
+		height="<c:out value='${configSistema.heightLogoSistema}' />"
+		class="d-inline-block align-top" alt="logo_sistema"> <c:out
+			value="${configSistema.tituloSistema}" /></a>
+
+	<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+		<ul class="navbar-nav mr-auto">
+			<c:if test="${fn:length(user.menu) gt 0}">
+				<c:forEach var="row" items="${user.menu}">
+					<li class="nav-item dropdown"><a
+						class="nav-link dropdown-toggle" href="#"
+						id="menu<c:out value='${row.idApp}' />" data-toggle="dropdown"
+						aria-haspopup="true" aria-expanded="false"><i
+							class="fa <c:out value='${row.iconoApp}' />" aria-hidden="true"></i>
+							<c:out value='${row.nombreApp}' /></a> <c:if
+							test="${fn:length(row.subMenu) gt 0}">
+							<div class="dropdown-menu"
+								aria-labelledby="menu<c:out value='${row.idApp}' />">
+								<c:forEach var="item" items="${row.subMenu}">
+									<c:choose>
+										<c:when test="${item.isHeader == 1}">
+											<div class="dropdown-divider"></div>
+											<h6 class="dropdown-header">
+												<i class="fa <c:out value='${item.iconoAction}' />"
+													aria-hidden="true"></i>
+												<c:out value='${item.nombreAction}' />
+											</h6>
+										</c:when>
+										<c:otherwise>
+											<a class="dropdown-item"
+												href="${root}<c:out value='${item.urlAction}' />"><i
+												class="fa <c:out value='${item.iconoAction}' />"
+												aria-hidden="true"></i> <c:out value='${item.nombreAction}' /></a>
+										</c:otherwise>
+									</c:choose>
+								</c:forEach>
+							</div>
+						</c:if></li>
+				</c:forEach>
+			</c:if>
+
+
+			<!-- SESION DE USUARIO -->
+			<li class="nav-item dropdown"><a
+				class="nav-link dropdown-toggle" data-toggle="dropdown"> <strong
+					class="pointer"><i class="fa fa-user" aria-hidden="true"></i>
+						Sesión</strong> <span class="glyphicon glyphicon-chevron-down"></span>
+			</a>
+				<ul class="dropdown-menu">
+					<li>
+						<div class="navbar-login">
+							<div class="row">
+								<div class="col-lg-4">
+									<p class="text-center">
+										<c:choose>
+											<c:when
+												test="${empty fn:trim(user.imgAvatarDTO.imgStringBase64)}">
+												<img src="./img/users/user.png" class="img img-thumbnail"
+													width="100" height="100" alt="usr_img"></img>
+											</c:when>
+											<c:otherwise>
+												<c:set var="fotoUsuario1"
+													value="${fn:replace(user.imgAvatarDTO.imgStringBase64, ' ', '')}" />
+												<c:choose>
+													<c:when test="${!empty fn:trim(fotoUsuario1)}">
+														<img src="<c:out value='${fotoUsuario1}' />"
+															class="img img-thumbnail" width="100" height="100"
+															alt="usr_img"></img>
+
+													</c:when>
+													<c:otherwise>
+														<img src="./img/users/user.png" class="img img-thumbnail"
+															width="100" height="100" alt="usr_img"></img>
+													</c:otherwise>
+												</c:choose>
+
+											</c:otherwise>
+										</c:choose>
+									</p>
+								</div>
+								<div class="col-lg-8">
+									<p class="text-left" id="userNameSession">
+										<strong><c:out value="${user.nombreEmpleado}" /></strong>
+									</p>
+									<p class="text-left small">
+										<c:out value="${user.userEmail}" />
+									</p>
+									<p class="text-left">
+										<a href="#" data-toggle="modal" data-target="#userInfoModal"
+											class="btn btn-primary btn-block btn-sm"
+											data-username="<c:out value="${user.userName}" />"
+											data-nombre="<c:out value="${user.nombreCompletoEmpleado}" />">Actualizar
+											Datos</a>
+									</p>
+								</div>
+							</div>
+						</div>
+					</li>
+					<li class="divider"></li>
+					<li>
+						<div class="navbar-login navbar-login-session">
+							<div class="row">
+								<div class="col-lg-12">
+									<p>
+										<a href="${root}/login?action=doExit"
+											class="btn btn-danger btn-block">Cerrar Sesion</a>
+									</p>
+								</div>
+							</div>
+						</div>
+					</li>
+				</ul></li>
+		</ul>
+		<!-- <form class="form-inline my-2 my-lg-0">
+	          <input class="form-control mr-sm-2" type="text" placeholder="Search">
+	          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+	        </form>-->
+	</div>
+</nav>
+<!-- Modal -->
+
+<div id="userInfoModal" class="modal fade" role="dialog">
+	<div class="modal-dialog modal-lg">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Editar</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<h2 id="titleEdit"></h2>
+					<hr>
+					<form class="form-horizontal" id="userForm" role="form"
+						accept-charset="utf-8">
+						<!-- enctype="multipart/form-data"  -->
+						<div class="row">
+							<!-- left column -->
+							<div class="col-md-3">
+								<div class="text-center">
+									<c:choose>
+										<c:when
+											test="${empty fn:trim(user.imgAvatarDTO.imgStringBase64)}">
+											<img id="imgAvatar" src="./img/users/user.png"
+												class="avatar img-circle" width="100" height="120"
+												alt="avatar">
+										</c:when>
+										<c:otherwise>
+											<c:set var="fotoUsuario2"
+												value="${fn:replace(user.imgAvatarDTO.imgStringBase64, ' ', '')}" />
+											<c:choose>
+												<c:when test="${!empty fn:trim(fotoUsuario2)}">
+													<img id="imgAvatar" src="<c:out value='${fotoUsuario2}' />"
+														class="avatar img-circle" width="100" height="120"
+														alt="avatar">
+
+												</c:when>
+												<c:otherwise>
+													<img id="imgAvatar" src="./img/users/user.png"
+														class="avatar img-circle" width="100" height="120"
+														alt="avatar">
+												</c:otherwise>
+											</c:choose>
+
+										</c:otherwise>
+									</c:choose>
+
+									<h6>Cargar una foto.</h6>
+									<input type="file" accept="image/*" style="width: 10em;"
+										class="form-control" name="userAvatar" id="userAvatar">
+								</div>
+							</div>
+							<!-- edit form column -->
+							<div class="col-md-9 personal-info">
+								<!-- <div class="alert alert-info alert-dismissable">
+								<a class="panel-close close" data-dismiss="alert">×</a> <i
+									class="fa fa-coffee"></i> <strong>Correcto! </strong>. Datos
+								actualizados.
+							</div>-->
+								<h3>Información de usuario.</h3>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Nombre de
+										usuario:</label>
+									<div class="col-md-8">
+										<input class="form-control" name="usernameField"
+											autocomplete="username" id="usernameField" type="text"
+											value="" disabled>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-md-3 control-label">Password:</label>
+									<div class="col-md-8">
+										<input class="form-control" name="passwordField"
+											type="password" value="1111112" autocomplete="new-password">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-md-3 control-label">Confirmar
+										password:</label>
+									<div class="col-md-8">
+										<input class="form-control" name="passwordField2"
+											type="password" value="1111112" autocomplete="new-password">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-md-3 control-label"></label>
+									<div class="col-md-8">
+										<input type="submit" class="btn btn-primary"
+											value="Guardar cambios"> <span></span>
+										<!--<input
+											type="button" onclick="reset();" class="btn btn-default" value="Cancelar">-->
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- row -->
+					</form>
+				</div>
+				<hr>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+

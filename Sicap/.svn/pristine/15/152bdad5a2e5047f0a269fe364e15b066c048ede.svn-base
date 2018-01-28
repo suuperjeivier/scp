@@ -1,0 +1,7 @@
+@CHARSET "ISO-8859-1";
+.btn-margin{
+	margin-left: 1em;
+}
+#imgPerfil{
+	    width: 7em;
+}

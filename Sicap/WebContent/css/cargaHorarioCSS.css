@@ -1,0 +1,24 @@
+.dz-default {
+	border-color: black;
+	border-style: dashed;
+	padding: 3em;
+	text-align: center;
+	width: 104%;
+	height: 35rem;
+}
+
+#lblInfo {
+	margin-left: 5%;
+}
+
+#btnGuardarHorario {
+	margin-bottom: 1em;
+}
+
+.btn-nuevo {
+	margin-bottom: 1em;
+}
+
+#documentosHorarios {
+	margin-left: 3em;
+}

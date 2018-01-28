@@ -1,0 +1,8 @@
+package dto.user.menu.submenu;
+
+public class AppDTO {
+	private int idApp;
+	private String nombreApp;
+	
+
+}

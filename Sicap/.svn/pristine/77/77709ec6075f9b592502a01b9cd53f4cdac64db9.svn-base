@@ -1,0 +1,27 @@
+package dto.user.perfil;
+
+public class PerfilDTO {
+	private int idPerfil;
+	private String description;
+	private int status;
+	
+	public int getIdPerfil() {
+		return idPerfil;
+	}
+	public void setIdPerfil(int idPerfil) {
+		this.idPerfil = idPerfil;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String descripccion) {
+		this.description = descripccion;
+	}
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+}

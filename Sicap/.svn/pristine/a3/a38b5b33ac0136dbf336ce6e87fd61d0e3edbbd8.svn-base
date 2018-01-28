@@ -1,0 +1,55 @@
+package dto.user.menu.submenu;
+
+public class SubMenuDTO {
+	private int idAction;
+	private int fkApp;
+	private String nombreAction;
+	private String urlAction;
+	private String iconoAction;
+	private int isHeader;
+	private int statusAction;
+	
+	public int getIdAction() {
+		return idAction;
+	}
+	public void setIdAction(int idAction) {
+		this.idAction = idAction;
+	}
+	public int getFkApp() {
+		return fkApp;
+	}
+	public void setFkApp(int fkApp) {
+		this.fkApp = fkApp;
+	}
+	public String getNombreAction() {
+		return nombreAction;
+	}
+	public void setNombreAction(String nombreAction) {
+		this.nombreAction = nombreAction;
+	}
+	public String getUrlAction() {
+		return urlAction;
+	}
+	public void setUrlAction(String urlAction) {
+		this.urlAction = urlAction;
+	}
+	public int getStatusAction() {
+		return statusAction;
+	}
+	public void setStatusAction(int statusAction) {
+		this.statusAction = statusAction;
+	}
+	public int getIsHeader() {
+		return isHeader;
+	}
+	public void setIsHeader(int isHeader) {
+		this.isHeader = isHeader;
+	}
+	public String getIconoAction() {
+		return iconoAction;
+	}
+	public void setIconoAction(String iconoAction) {
+		this.iconoAction = iconoAction;
+	}
+
+}

@@ -1,0 +1,76 @@
+.pointer{
+	cursor: pointer;
+}
+#initRow{
+	margin-top: 4em;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 77px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 77px;
+  background-color: #2e2e2e;
+  line-height: 60px;
+}
+.modal { overflow: visible; }
+.modal-body { overflow-y: visible !important; }
+
+.btn-margin{
+	margin: 1em 1em 1em 1em;
+}
+
+.texto-azul-bold{
+	color: darkblue;
+	font-weight: bold;
+}
+
+.texto-azul{
+	color: darkblue;
+}
+.pointer{
+	cursor: pointer;
+}
+
+.texto-gris{
+	color: gray;
+}
+
+.texto-blanco-bold{
+	color: white;
+	font-weight: bold;
+}
+
+.font-size11{
+	font-size: 11pt;
+}
+
+.boton-alineadoDerecha{
+	left: 3em;
+}
+
+.texto-alineadoDerecha-rojoBold{
+	text-align: right;
+	color: red;
+	font-weight: bold;
+}
+
+.div-background-black-degradado{
+	background: rgba(76,76,76,1);
+	background: -moz-linear-gradient(top, rgba(76,76,76,1) 0%, rgba(102,102,102,1) 21%, rgba(0,0,0,1) 42%, rgba(44,44,44,1) 61%, rgba(71,71,71,1) 62%, rgba(19,19,19,1) 100%);
+	background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(76,76,76,1)), color-stop(21%, rgba(102,102,102,1)), color-stop(42%, rgba(0,0,0,1)), color-stop(61%, rgba(44,44,44,1)), color-stop(62%, rgba(71,71,71,1)), color-stop(100%, rgba(19,19,19,1)));
+	background: -webkit-linear-gradient(top, rgba(76,76,76,1) 0%, rgba(102,102,102,1) 21%, rgba(0,0,0,1) 42%, rgba(44,44,44,1) 61%, rgba(71,71,71,1) 62%, rgba(19,19,19,1) 100%);
+	background: -o-linear-gradient(top, rgba(76,76,76,1) 0%, rgba(102,102,102,1) 21%, rgba(0,0,0,1) 42%, rgba(44,44,44,1) 61%, rgba(71,71,71,1) 62%, rgba(19,19,19,1) 100%);
+	background: -ms-linear-gradient(top, rgba(76,76,76,1) 0%, rgba(102,102,102,1) 21%, rgba(0,0,0,1) 42%, rgba(44,44,44,1) 61%, rgba(71,71,71,1) 62%, rgba(19,19,19,1) 100%);
+	background: linear-gradient(to bottom, rgba(76,76,76,1) 0%, rgba(102,102,102,1) 21%, rgba(0,0,0,1) 42%, rgba(44,44,44,1) 61%, rgba(71,71,71,1) 62%, rgba(19,19,19,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', endColorstr='#131313', GradientType=0 );
+}

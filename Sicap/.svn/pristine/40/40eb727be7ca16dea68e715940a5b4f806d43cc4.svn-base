@@ -1,0 +1,5 @@
+package dao.partners;
+
+public class PartnerDAO {
+
+}

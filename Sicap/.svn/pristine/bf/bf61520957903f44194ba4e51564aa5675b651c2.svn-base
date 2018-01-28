@@ -1,0 +1,810 @@
+package dao.item;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Vector;
+
+import dao.DatabaseGateway;
+import dto.listados.ConfigCamposTipoItemDTO;
+import dto.listados.TipoEstatusDTO;
+import dto.listados.items.ItemDTO;
+import dto.listados.items.LineaItemDTO;
+import dto.listados.items.MarcaItemDTO;
+import dto.listados.items.ModeloItemDTO;
+import dto.listados.items.TipoItemDTO;
+import herramientas.herrramientasrs.HerramientasResultSet;
+
+public class ItemDAO {
+
+	private DatabaseGateway database;
+	private HerramientasResultSet herramientasRS;
+	
+	/**
+	 * Construye la clase sin paramentros
+	 */
+	public ItemDAO(){
+		if(this.database == null){
+			this.database = new DatabaseGateway();
+		}else{
+			System.out.println("database != null en " + this.getClass().getSimpleName() );
+		}
+		InitializeComponents();
+	}
+	
+	/**
+	 * Constrye la clase con la instancia de base de datos por parametro para reutilizar el objeto
+	 */
+	public ItemDAO(DatabaseGateway database){
+		if(this.database == null){
+			if(database != null){
+				this.database = database;
+			}else{
+				this.database = new DatabaseGateway();
+			}
+		}else{
+			System.out.println("database != null en " + this.getClass().getSimpleName() );
+		}
+		InitializeComponents();
+	}
+	
+	/**
+	 * INICIALIZA LOS COMPONENTES DE LA CLASE
+	 */
+	public void InitializeComponents(){
+		if (herramientasRS == null){
+			herramientasRS = new HerramientasResultSet();
+		}else{
+			System.out.println("herramientasRS != null en " + this.getClass().getSimpleName() );
+		}
+	}
+	
+	/**
+	 * INSERTA UN item EN LA BD [20170526] JAVIER
+	 * @param ItemDTO item
+	 * @return int res
+	 */
+	public int insertNewItem(ItemDTO item){
+		int res = -1;
+		if(item != null){
+			if(database.openDatabase()){
+				System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+				String tabla = "tb_items";
+				String i = "_item";
+
+				String query = "INSERT INTO "+tabla
+							+" ("
+								+ tabla+".fk_id_item_tipo"+", "
+								+ tabla+".sku"+i+", "
+								+ tabla+".nombre"+i+", "
+								+ tabla+".no_serie"+i+", "
+								+ tabla+".placas"+i+", "
+								+ tabla+".categoria"+i+", "
+								+ tabla+".fk_id_modelo"+i+", "
+								+ tabla+".color"+i+", "
+								+ tabla+".tamano"+i+", "
+								+ tabla+".fk_id_marca"+i+", "
+								+ tabla+".forma"+i+", "
+								+ tabla+".fK_id_marca_linea"+i+", "
+								+ tabla+".item_asignado"+i+", "
+								+ tabla+".asignacion"+i+", "
+								+ tabla+".string_1"+i+", "						
+								+ tabla+".comentarios"+i+", "
+								+ tabla+".fk_id_status_situacion"+i+", "
+								+ tabla+".fk_id_status_ubicacion"+i+", "
+								+ tabla+".fk_id_contabilidad_recurso"+i+", "						
+								+ tabla+".contrato"+i+", "
+								+ tabla+".fecha_creacion"+i+", "
+								+ tabla+".hora_creacion"+i+", "
+								+ tabla+".fk_id_usuario_creacion"+i+", "
+								+ tabla+".proyecto"+i+", "
+								+ tabla+".fk_id_status"+i
+							+ ")"
+						+ "VALUES"
+							+ "("
+								+ item.getTipoItem().getIdTipoItem()+", "
+								+ "'" + item.getSkuItem() + "', "
+								+ "'" + item.getNombreItem() + "', "
+								+ "'" + item.getNoSerieItem() + "', "
+								+ "'" + item.getPlacasItem() + "', "
+								+ "'" + item.getCategoriaItem() + "', "
+								+ "" + item.getModeloItem().getIdModeloItem() + ", "
+								+ "'" + item.getColorItem() + "', "
+								+ "'" + item.getTamanoItem() + "', "
+								+ item.getMarcaItem().getIdMarcaItem() + ", "
+								+ "'" + item.getFormaItem() + "', "
+								+ item.getLineaItem().getIdLinea() + ", "
+								+ (item.isItemAsignadoItem() ? 1 : 0) + ", "
+								+ item.getAsignacionItem() + ", "
+								+ "'" + item.getString1Item() + "', "						
+								+ "'" + item.getComentariosItem() + "',"
+								+ item.getSituacionItemDTO().getEstatusInt() + ", "
+								+ item.getUbicacionItemDTO().getEstatusInt() + ", "
+								+ item.getIdContabilidadRecursoItem() + ", "
+								+ "'" + item.getContratoItem() + "', "
+								+ "'" + item.getFechaHoraCreacion().getFecha().getFechaLD() + "', "
+								+ "'" + item.getFechaHoraCreacion().getHora().getHoraLT() + "', "
+								+ item.getUsuarioCreacion().getIdUser() + ", "
+								+ "'" + item.getProyectoItem() + "', "
+								+ item.getStatusItem().getEstatusInt()
+							+ ")"
+						+ ";";
+				try {
+					System.out.println(query);
+					res = database.executeNonQuery(query);
+
+				} catch (SQLException e) {				
+					e.printStackTrace();
+				}
+				if (database.closeDatabase()){
+					System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+				}else{
+					System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+				}
+			}else{
+				System.out.println("item == null");
+			}
+		}else{
+			System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+		}
+		return res;
+	}
+	
+	/**
+	 * INSERTA UN item EN LA BD [20170526] JAVIER
+	 * @param ItemDTO item
+	 * @return int res
+	 */
+	public int updateItemDTO(ItemDTO item){
+		int res = -1;
+		if(item != null){
+			if(database.openDatabase()){
+				System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+				String tabla = "tb_items";
+				String i = "_item";
+
+				String query = "UPDATE "+tabla
+						+" SET "
+						+ tabla+".fk_id_item_tipo"+"= "
+						+ item.getTipoItem().getIdTipoItem()+", "
+						+ tabla+".sku"+i+"= "+ "'" + item.getSkuItem() + "', "
+						+ tabla+".nombre"+i+"= "+ "'" + item.getNombreItem() + "', "						
+						+ tabla+".no_serie"+i+"= "+ "'" + item.getNoSerieItem() + "', "
+						+ tabla+".placas"+i+"= "+ "'" + item.getPlacasItem() + "', "
+						+ tabla+".categoria"+i+"= "+ "'" + item.getCategoriaItem() + "', "
+						+ tabla+".fk_id_modelo"+i+"= "+ "'" + item.getModeloItem().getIdModeloItem() + "', "
+						+ tabla+".color"+i+"= "+ "'" + item.getColorItem() + "', "
+						+ tabla+".tamano"+i+"= "+ "'" + item.getTamanoItem() + "', "
+						+ tabla+".fk_id_marca"+i+"= " + item.getMarcaItem().getIdMarcaItem() + ", "
+						+ tabla+".forma"+i+"= " + "'" + item.getFormaItem() + "', "
+						+ tabla+".fk_id_marca_linea"+i+"= " + item.getLineaItem().getIdLinea() + ", "
+						+ tabla+".item_asignado"+i+"= "+ (item.isItemAsignadoItem() ? 1 : 0) + ", "
+						+ tabla+".asignacion"+i+"= "+ item.getAsignacionItem() + ", "
+						+ tabla+".string_1"+i+"= "+ "'" + item.getString1Item() + "', "
+						+ tabla+".fecha_actualizacion"+i+"= "+ "'" + item.getFechaHoraActualizacion().getFecha().getFechaLD() + "', "
+						+ tabla+".hora_actualizacion"+i+"= "+ "'" + item.getFechaHoraActualizacion().getHora().getHoraLT() + "', "
+						+ tabla+".fk_id_usuario_actualizacion"+i+"= "+ item.getUsuarioActualizacion().getIdUser() + ", "
+						+ tabla+".comentarios"+i+"= "+ "'" + item.getComentariosItem() + "', "
+						+ tabla+".fk_id_status_situacion"+i+"= "+ item.getSituacionItemDTO().getEstatusInt() + ", "
+						+ tabla+".fk_id_status_ubicacion"+i+"= "+ item.getUbicacionItemDTO().getEstatusInt() + ", "
+						+ tabla+".fk_id_contabilidad_recurso"+i+"= "+ item.getIdContabilidadRecursoItem() + ", "						
+						+ tabla+".contrato"+i+"= "+ "'" + item.getContratoItem() + "', "
+						+ tabla+".fecha_recepcion"+i+"= "+ "'" + item.getFechaHoraRecepcionItem().getFecha().getFechaLD() + "', ";
+						if(item.getFechaHoraRecepcionItem().getHora().getHoraLT() != null){
+							query += tabla+".hora_recepcion"+i+"= "+ "'" + item.getFechaHoraRecepcionItem().getHora().getHoraLT() + "', ";
+						}
+						query += tabla+".proyecto"+i+"= "+ "'" + item.getProyectoItem() + "', "
+						+ tabla+".fk_id_status"+i+"="+ item.getStatusItem().getEstatusInt()						
+						+ " WHERE "
+						+ "id_item = " +item.getIdItem()						
+						+ ";";
+				try {
+					System.out.println(query);
+					res = database.executeNonQuery(query);
+				} catch (SQLException e) {				
+					e.printStackTrace();
+				}
+				if (database.closeDatabase()){
+					System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+				}else{
+					System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+				}
+			}else{
+				System.out.println("item == null");
+			}
+		}else{
+			System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+		}
+		return res;
+	}
+	
+	
+	public Vector<ItemDTO> selectItems(int idTipoItem, ConfigCamposTipoItemDTO configCampos){		
+		Vector<ItemDTO> items = null;
+		if(database.openDatabase()){
+			System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+			ResultSet rs = null;
+			/**
+			 * --campos
+			 */
+			String query= "SELECT tb_items.`*`";
+			if(configCampos.getConfigCampoSituacionItem().isMostrar()){
+				query += ", situacion_item.`*`";
+			}
+			if(configCampos.getConfigCampoUbicacionItem().isMostrar()){
+				query += ", ubicacion_item.`*` ";
+			}
+			if(configCampos.getConfigCampoStatusItem().isMostrar()){
+				query += ", status_item.`*` ";
+			}
+			if(configCampos.getConfigCampoModeloItem().isMostrar()){
+				query += ", modelo_item.`*` ";
+			}
+			
+			
+			query +=  " FROM tb_items \r\n";
+			/**
+			 * --left join
+			 */
+			query += " LEFT JOIN tb_items_tipos ON tb_items.fk_id_item_tipo = tb_items_tipos.id_tipo\r\n";
+			if(configCampos.getConfigCampoSituacionItem().isMostrar()){
+				query += " LEFT JOIN tb_tipos_estatus AS situacion_item ON tb_items.fk_id_status_situacion_item = situacion_item.status_int\r\n";
+			}
+			if(configCampos.getConfigCampoUbicacionItem().isMostrar()){
+				query += " LEFT JOIN tb_tipos_estatus AS ubicacion_item ON tb_items.fk_id_status_ubicacion_item = ubicacion_item.status_int\r\n";
+			}
+			if(configCampos.getConfigCampoStatusItem().isMostrar()){
+				query += " LEFT JOIN tb_tipos_estatus AS status_item ON tb_items.fk_id_status_item = status_item.status_int\r\n";
+			}			
+			if(configCampos.getConfigCampoModeloItem().isMostrar()){
+				query += " LEFT JOIN tb_items_tipos_modelos AS modelo_item ON tb_items.fk_id_modelo_item = modelo_item.id_modelo\r\n";
+			}
+			if(configCampos.getConfigCampoMarcaItem().isMostrar()){
+				query += " LEFT JOIN tb_items_tipos_marcas AS marca_item ON tb_items.fk_id_marca_item = marca_item.id_marca\r\n";
+			}
+			
+			/**
+			 * --WHERE
+			 */
+			query += " WHERE tb_items.fk_id_item_tipo = " + idTipoItem;
+			if(configCampos.getConfigCampoSituacionItem().isMostrar()){
+				query += " AND situacion_item.fk_id_item_tipo = tb_items.fk_id_item_tipo AND situacion_item.aplicacion = 'items_situacion' \r\n";
+			}
+			if(configCampos.getConfigCampoUbicacionItem().isMostrar()){
+				query +=" AND ubicacion_item.fk_id_item_tipo = tb_items.fk_id_item_tipo AND ubicacion_item.aplicacion = 'items_ubicacion'\r\n";
+			}
+			
+			if(configCampos.getConfigCampoStatusItem().isMostrar()){
+				query +=" AND status_item.fk_id_item_tipo = tb_items.fk_id_item_tipo  AND status_item.aplicacion = 'items_status' OR (tb_items.fk_id_item_tipo = "+idTipoItem+" AND tb_items.fk_id_status_item IS NULL )";
+			}
+			
+			query += "  GROUP BY tb_items.id_item ORDER BY tb_items.id_item DESC;";
+			try {
+				System.out.println(query);
+				rs = database.executeQuery(query);
+				if(rs != null){
+					items = new Vector<>();
+					while(rs.next()){
+						ItemDTO item = herramientasRS.inicializaItemDTO(rs, configCampos);
+						if(item != null){
+							items.add(item);
+						}
+					}
+					try{
+						rs.close();
+					}catch (Exception e) {
+						e.printStackTrace();
+					}	
+				}else{
+					System.out.println("rs == nullo en selectItems");
+				}
+			} catch (SQLException e) {				
+				e.printStackTrace();
+			}
+			if (database.closeDatabase()){
+				System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+			}else{
+				System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+			}
+		}else{
+			System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+		}
+		return items;
+	}	
+	
+	
+	/**
+	 * SELECCIONA UN TIPO DE ITEM POR ID TIPO
+	 * @param idTipoItem
+	 * @return
+	 */
+	public TipoItemDTO selectTipoItem(int idTipoItem){		
+		TipoItemDTO tipoItem = null;
+		if(database.openDatabase()){
+			System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+			ResultSet rs = null;
+			String query= "SELECT * FROM tb_items_tipos WHERE tb_items_tipos.id_tipo = "+idTipoItem+";";
+			try {
+//				System.out.println(query);
+				rs = database.executeQuery(query);
+				if(rs != null){
+					
+					while(rs.next()){
+						tipoItem = herramientasRS.inicializaTipoItemDTO(rs);						
+					}
+					try{
+						rs.close();
+					}catch (Exception e) {
+						e.printStackTrace();
+					}	
+				}else{
+					System.out.println("rs == nullo en selectTipoItem");
+				}
+			} catch (SQLException e) {				
+				e.printStackTrace();
+			}
+			if (database.closeDatabase()){
+				System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+			}else{
+				System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+			}
+		}else{
+			System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+		}
+		return tipoItem;
+	}
+	
+	/**
+	 * SELECCIONA TODOS LOS TIPOS DE ITEMS
+	 * @param idTipoItem
+	 * @return
+	 */
+	public Vector<TipoItemDTO> selectTiposItems(){	
+		Vector<TipoItemDTO> tiposItems = new Vector<TipoItemDTO>();
+		TipoItemDTO tipoItem = null;
+		if(database.openDatabase()){
+			System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+			ResultSet rs = null;
+			String query= "SELECT * FROM tb_items_tipos;";
+			try {
+//				System.out.println(query);
+				rs = database.executeQuery(query);
+				if(rs != null){
+					
+					while(rs.next()){
+						tipoItem = herramientasRS.inicializaTipoItemDTO(rs);		
+						tiposItems.add(tipoItem);
+					}
+					try{
+						rs.close();
+					}catch (Exception e) {
+						e.printStackTrace();
+					}	
+				}else{
+					System.out.println("rs == nullo en selectTipoItem");
+				}
+			} catch (SQLException e) {				
+				e.printStackTrace();
+			}
+			if (database.closeDatabase()){
+				System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+			}else{
+				System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+			}
+		}else{
+			System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+		}
+		return tiposItems;
+	}
+	
+	/**
+	 * SELECCIONA TODOS LOS ITEM DE UN TIPO DE ITEM
+	 * @param idTipoItem
+	 * @return
+	 */
+	public Vector<ItemDTO> selectItemTipo(int idTipoItem){	
+		Vector<ItemDTO> vItemTipo = new Vector<ItemDTO>();
+		if(database.openDatabase()){
+			System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+			ResultSet rs = null;
+			String query= "SELECT * FROM tb_items LEFT JOIN  tb_items_tipos ON tb_items.fk_id_item_tipo = tb_items_tipos.id_tipo WHERE tb_items.fk_id_item_tipo = "+idTipoItem+";";
+			try {
+				System.out.println(query);
+				rs = database.executeQuery(query);
+				if(rs != null){					
+					while(rs.next()){
+						ItemDTO itemTipo = herramientasRS.inicializaItemTipoDTO(rs);
+						if(itemTipo != null){
+							vItemTipo.add(itemTipo);
+						}else{
+							
+						}
+					}
+					try{
+						rs.close();
+					}catch (Exception e) {
+						e.printStackTrace();
+					}	
+				}else{
+					System.out.println("rs == nullo en selectItemTipo");
+				}
+			} catch (SQLException e) {				
+				e.printStackTrace();
+			}
+			if (database.closeDatabase()){
+				System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+			}else{
+				System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+			}
+		}else{
+			System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+		}
+		return vItemTipo;
+	}
+	
+	public Vector<ItemDTO> selectItemsSinMovimiento(int idTipoItem){	
+		Vector<ItemDTO> vItemTipo = new Vector<ItemDTO>();
+		if(database.openDatabase()){
+			System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+			ResultSet rs = null;
+			String query= "SELECT * FROM tb_items LEFT JOIN  tb_items_tipos ON tb_items.fk_id_item_tipo = tb_items_tipos.id_tipo\r\n" + 
+					"left JOIN  tb_movimientos_items ON tb_items.id_item = tb_movimientos_items.fk_id_item \r\n" + 
+					" WHERE tb_items.fk_id_item_tipo = "+idTipoItem+" and tb_movimientos_items.fk_id_item IS NULL;";
+			try {
+				System.out.println(query);
+				rs = database.executeQuery(query);
+				if(rs != null){					
+					while(rs.next()){
+						ItemDTO itemTipo = herramientasRS.inicializaItemTipoDTO(rs);
+						if(itemTipo != null){
+							vItemTipo.add(itemTipo);
+						}else{
+							
+						}
+					}
+					try{
+						rs.close();
+					}catch (Exception e) {
+						e.printStackTrace();
+					}	
+				}else{
+					System.out.println("rs == nullo en selectItemTipo");
+				}
+			} catch (SQLException e) {				
+				e.printStackTrace();
+			}
+			if (database.closeDatabase()){
+				System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+			}else{
+				System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+			}
+		}else{
+			System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+		}
+		return vItemTipo;
+	}
+	
+	
+	
+	/**
+	 * SELECCIONA EL MAXIMO ID DE UN TIPO DE ITEM EN LA TABLA DE ITEMS
+	 * @param idTipoItem
+	 * @return
+	 */
+	public int selectMaxIdTipoItem(int idTipoItem){		
+		int max_id = 0;
+		if(database.openDatabase()){
+			System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+			ResultSet rs = null;
+			String query= "SELECT MAX(CAST(tb_items.sku_item AS UNSIGNED) ) AS max_id FROM tb_items WHERE tb_items.fk_id_item_tipo = "+idTipoItem+";";
+			try {
+				System.out.println(query);
+				rs = database.executeQuery(query);
+				if(rs != null){					
+					while(rs.next()){
+						max_id = rs.getInt("max_id");						
+					}
+					try{
+						rs.close();
+					}catch (Exception e) {
+						e.printStackTrace();
+					}	
+				}else{
+					System.out.println("rs == nullo en selectTipoItem");
+				}
+			} catch (SQLException e) {				
+				e.printStackTrace();
+			}
+			if (database.closeDatabase()){
+				System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+			}else{
+				System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+			}
+		}else{
+			System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+		}
+		return max_id;
+	}	
+	
+	
+	/**
+	 * SELECCIONA los modelos de items de la tabla modelos
+	 * @param idTipoItem
+	 * @return
+	 */
+	public Vector<ModeloItemDTO> selectModelosItems(){		
+		Vector<ModeloItemDTO> modelos = new Vector<ModeloItemDTO>();
+		if(database.openDatabase()){
+			System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+			ResultSet rs = null;
+			String query= "SELECT * FROM tb_items_tipos_modelos "
+					+ "LEFT JOIN tb_items_tipos ON tb_items_tipos_modelos.fk_id_tipo_item = tb_items_tipos.id_tipo;";
+			try {
+				System.out.println(query);
+				rs = database.executeQuery(query);
+				if(rs != null){					
+					while(rs.next()){
+						ModeloItemDTO modelo = herramientasRS.inicializaModeloItemDTO(rs);
+						if(modelo != null){
+							modelos.add(modelo);
+						}else{
+							
+						}
+					}
+					try{
+						rs.close();
+					}catch (Exception e) {
+						e.printStackTrace();
+					}	
+				}else{
+					System.out.println("rs == nullo en selectTipoItem");
+				}
+			} catch (SQLException e) {				
+				e.printStackTrace();
+			}
+			if (database.closeDatabase()){
+				System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+			}else{
+				System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+			}
+		}else{
+			System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+		}
+		return modelos;
+	}
+	
+	/**
+	 * SELECCIONA los modelos de items de la tabla modelos
+	 * @param idTipoItem
+	 * @return
+	 */
+	public Vector<ModeloItemDTO> selectModelosItemsPorTipoItem(TipoItemDTO tipoItem){		
+		Vector<ModeloItemDTO> modelos = new Vector<ModeloItemDTO>();
+		if(database.openDatabase()){
+			System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+			ResultSet rs = null;
+			String query= "SELECT * FROM tb_items_tipos_modelos "
+					+ "LEFT JOIN tb_items_tipos ON tb_items_tipos_modelos.fk_id_tipo_item = tb_items_tipos.id_tipo "
+					+ "WHERE tb_items_tipos_modelos.fk_id_tipo_item = " + tipoItem.getIdTipoItem();
+			try {
+				System.out.println(query);
+				rs = database.executeQuery(query);
+				if(rs != null){					
+					while(rs.next()){
+						ModeloItemDTO modelo = herramientasRS.inicializaModeloItemDTO(rs);
+						if(modelo != null){
+							modelos.add(modelo);
+						}else{
+							
+						}
+					}
+					try{
+						rs.close();
+					}catch (Exception e) {
+						e.printStackTrace();
+					}	
+				}else{
+					System.out.println("rs == nullo en selectTipoItem");
+				}
+			} catch (SQLException e) {				
+				e.printStackTrace();
+			}
+			if (database.closeDatabase()){
+				System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+			}else{
+				System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+			}
+		}else{
+			System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+		}
+		return modelos;
+	}
+	
+	/**
+	 * SELECCIONA los modelos de items de la tabla modelos
+	 * @param idTipoItem
+	 * @return
+	 */
+	public Vector<LineaItemDTO> selectLineasItemPorTipoItem(TipoItemDTO tipoItem){		
+		Vector<LineaItemDTO> lineasItemDTO = new Vector<LineaItemDTO>();
+		if(database.openDatabase()){
+			System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+			ResultSet rs = null;
+			String query= "SELECT * FROM tb_items_marcas_lineas "
+					+ "LEFT JOIN tb_items_tipos ON tb_items_marcas_lineas.fk_id_tipo_item = tb_items_tipos.id_tipo "
+					+ "WHERE tb_items_marcas_lineas.fk_id_tipo_item = " + tipoItem.getIdTipoItem();
+			try {
+				System.out.println(query);
+				rs = database.executeQuery(query);
+				if(rs != null){					
+					while(rs.next()){
+						LineaItemDTO lineaItemDTO = herramientasRS.inicializaLineaItemDTO(rs);
+						if(lineaItemDTO != null){
+							lineasItemDTO.add(lineaItemDTO);
+						}else{
+							
+						}
+					}
+					try{
+						rs.close();
+					}catch (Exception e) {
+						e.printStackTrace();
+					}	
+				}else{
+					System.out.println("rs == nullo en selectTipoItem");
+				}
+			} catch (SQLException e) {				
+				e.printStackTrace();
+			}
+			if (database.closeDatabase()){
+				System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+			}else{
+				System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+			}
+		}else{
+			System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+		}
+		return lineasItemDTO;
+	}
+	
+	/**
+	 * SELECCIONA los status de items de la tabla estatus
+	 * @param idTipoItem
+	 * @return
+	 */
+	public Vector<TipoEstatusDTO> selectStatusesPorTipoItem(TipoItemDTO tipoItem, String aplicacion){		
+		Vector<TipoEstatusDTO> lineasItemDTO = new Vector<TipoEstatusDTO>();
+		if(database.openDatabase()){
+			System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+			ResultSet rs = null;
+			String query= "SELECT * FROM tb_tipos_estatus "
+					+ "LEFT JOIN tb_items_tipos ON tb_tipos_estatus.fk_id_item_tipo = tb_items_tipos.id_tipo "
+					+ "WHERE tb_tipos_estatus.fk_id_item_tipo = "+ tipoItem.getIdTipoItem() + " AND tb_tipos_estatus.aplicacion = '"+aplicacion+"'";
+			try {
+				System.out.println(query);
+				rs = database.executeQuery(query);
+				if(rs != null){					
+					while(rs.next()){
+						TipoEstatusDTO tipoEstatus = herramientasRS.inicializaEstatusDTO(rs);
+						if(tipoEstatus != null){
+							lineasItemDTO.add(tipoEstatus);
+						}else{
+							
+						}
+					}
+					try{
+						rs.close();
+					}catch (Exception e) {
+						e.printStackTrace();
+					}	
+				}else{
+					System.out.println("rs == nullo en selectTipoItem");
+				}
+			} catch (SQLException e) {				
+				e.printStackTrace();
+			}
+			if (database.closeDatabase()){
+				System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+			}else{
+				System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+			}
+		}else{
+			System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+		}
+		return lineasItemDTO;
+	}
+	
+	
+	/**
+	 * SELECCIONA los modelos de items de la tabla modelos
+	 * @param idTipoItem
+	 * @return
+	 */
+	public Vector<MarcaItemDTO> selectMarcasItemDTOPorTipoItem(TipoItemDTO tipoItem){		
+		Vector<MarcaItemDTO> marcasItemDTO = new Vector<MarcaItemDTO>();
+		if(database.openDatabase()){
+			System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+			ResultSet rs = null;
+			String query= "SELECT * FROM tb_items_tipos_marcas "
+					+ "LEFT JOIN tb_items_tipos ON tb_items_tipos_marcas.fk_id_tipo_item = tb_items_tipos.id_tipo "
+					+ "WHERE tb_items_tipos_marcas.fk_id_tipo_item = " + tipoItem.getIdTipoItem();
+			try {
+				System.out.println(query);
+				rs = database.executeQuery(query);
+				if(rs != null){					
+					while(rs.next()){
+						MarcaItemDTO marcaItemDTO = herramientasRS.inicializaMarcaItemDTO(rs);
+						if(marcaItemDTO != null){
+							marcasItemDTO.add(marcaItemDTO);
+						}else{
+							System.out.println("marcaItemDTO == null");
+						}
+					}
+					try{
+						rs.close();
+					}catch (Exception e) {
+						e.printStackTrace();
+					}	
+				}else{
+					System.out.println("rs == nullo en selectTipoItem");
+				}
+			} catch (SQLException e) {				
+				e.printStackTrace();
+			}
+			if (database.closeDatabase()){
+				System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+			}else{
+				System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+			}
+		}else{
+			System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+		}
+		return marcasItemDTO;
+	}
+	
+	/**
+	 * SELECCIONA las marcas de items de la tabla marcas
+	 * @param idTipoItem
+	 * @return
+	 */
+	public Vector<MarcaItemDTO> selectMarcasItems(){		
+		Vector<MarcaItemDTO> marcas = new Vector<MarcaItemDTO>();
+		if(database.openDatabase()){
+			System.out.println("conexion abierta en " + this.getClass().getSimpleName());
+			ResultSet rs = null;
+			String query= "SELECT * FROM tb_items_tipos_marcas "
+					+ "LEFT JOIN tb_items_tipos ON tb_items_tipos_marcas.fk_id_tipo_item = tb_items_tipos.id_tipo;";
+			try {
+				System.out.println(query);
+				rs = database.executeQuery(query);
+				if(rs != null){					
+					while(rs.next()){
+						MarcaItemDTO marca = herramientasRS.inicializaMarcaItemDTO(rs);
+						if(marcas != null){
+							marcas.add(marca);
+						}else{
+							
+						}
+					}
+					try{
+						rs.close();
+					}catch (Exception e) {
+						e.printStackTrace();
+					}	
+				}else{
+					System.out.println("rs == nullo en selectTipoItem");
+				}
+			} catch (SQLException e) {				
+				e.printStackTrace();
+			}
+			if (database.closeDatabase()){
+				System.out.println("conexion cerrada en " + this.getClass().getSimpleName());
+			}else{
+				System.out.println("conexion no cerrada en " + this.getClass().getSimpleName());
+			}
+		}else{
+			System.out.println("conexion no abierta en " + this.getClass().getSimpleName());
+		}
+		return marcas;
+	}
+	
+}

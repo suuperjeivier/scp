@@ -1,0 +1,9 @@
+@CHARSET "ISO-8859-1";
+
+.espacio-izquierda{
+    margin-left: 1em;
+}
+
+#contenedorTabla{
+	margin-top: 1em;
+}

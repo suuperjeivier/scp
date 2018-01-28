@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
+<!-- 2017-10-31T11:17:04 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Asistencia" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6f53c286-d940-46cf-98af-c2f73454bc07">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sist_per"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="FechaInicial" class="java.lang.String"/>
+	<parameter name="FechaFinal" class="java.lang.String"/>
+	<parameter name="runRemote" class="java.lang.Boolean"/>
+	<parameter name="CONTEXT" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[SELECT [Sistema_Personal].[dbo].[REGISTRO_DIARIO].CLAVE_P,
+[Sistema_Personal].[dbo].[PERSONAL].NOMBRE_P,
+[Sistema_Personal].[dbo].[CAT_DEPTO].NOM_DEPTO,
+[Sistema_Personal].[dbo].[REGISTRO_DIARIO].FECHA,
+[Sistema_Personal].[dbo].[REGISTRO_DIARIO].HORA_REGISTRADA
+  FROM [Sistema_Personal].[dbo].[REGISTRO_DIARIO] 
+  INNER JOIN [Sistema_Personal].[dbo].[PERSONAL] ON [Sistema_Personal].[dbo].[REGISTRO_DIARIO].CLAVE_P=[Sistema_Personal].[dbo].[PERSONAL].CLAVE_P
+  INNER JOIN [Sistema_Personal].[dbo].[CAT_DEPTO] ON [Sistema_Personal].[dbo].[PERSONAL].CLAVE_DEPTO=[Sistema_Personal].[dbo].[CAT_DEPTO].CLAVE_DEPTO
+  WHERE [Sistema_Personal].[dbo].[REGISTRO_DIARIO].FECHA BETWEEN   $P{FechaInicial}  AND  $P{FechaFinal}  ORDER BY [Sistema_Personal].[dbo].[CAT_DEPTO].NOM_DEPTO,  [Sistema_Personal].[dbo].[PERSONAL].NOMBRE_P ASC]]>
+	</queryString>
+	<field name="CLAVE_P" class="java.lang.String"/>
+	<field name="NOMBRE_P" class="java.lang.String"/>
+	<field name="NOM_DEPTO" class="java.lang.String"/>
+	<field name="FECHA" class="java.sql.Timestamp"/>
+	<field name="HORA_REGISTRADA" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="60" splitType="Stretch">
+			<textField>
+				<reportElement x="180" y="0" width="250" height="30" uuid="6a436968-1c7b-4f66-abf3-2b7898da14e4"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["REPORTE DE ASISTENCIA SISTEMA PERSONAL" +" DEL " + $P{FechaInicial} + " AL " + $P{FechaFinal}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="0" width="159" height="40" uuid="9ad73ac4-6fa5-4058-9e85-f979dfdcfff6"/>
+				<imageExpression><![CDATA[$P{runRemote}.booleanValue() ? "repo:logo_c4tabasco_segob" : $P{CONTEXT}+"reports/img/logo_c4tabasco_segob.png"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="13" splitType="Stretch">
+			<textField>
+				<reportElement key="" mode="Opaque" x="0" y="0" width="56" height="13" backcolor="#E0E0E0" uuid="b69881f6-8892-4d9b-b12f-f8632909b02d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box topPadding="1" leftPadding="1" bottomPadding="1" rightPadding="1">
+					<topPen lineWidth="0.3" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FECHA"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement key="" mode="Opaque" x="56" y="0" width="40" height="13" backcolor="#E0E0E0" uuid="af1c5f3b-857d-43f3-97c2-eab83cff3f84">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box topPadding="1" leftPadding="1" bottomPadding="1" rightPadding="1">
+					<topPen lineWidth="0.3" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.3" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.3" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.3" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CLAVE"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement key="" mode="Opaque" x="96" y="0" width="172" height="13" backcolor="#E0E0E0" uuid="2dd157d3-64b4-4040-9d33-240b149805e8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.3"/>
+					<leftPen lineWidth="0.3"/>
+					<bottomPen lineWidth="0.3"/>
+					<rightPen lineWidth="0.3"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NOMBRE"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement key="" mode="Opaque" x="268" y="0" width="152" height="13" backcolor="#E0E0E0" uuid="26a20f88-7e54-41a1-ba17-bdf738a9e470">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.3"/>
+					<leftPen lineWidth="0.3"/>
+					<bottomPen lineWidth="0.3"/>
+					<rightPen lineWidth="0.3"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DEPARTAMENTO"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement key="" mode="Opaque" x="420" y="0" width="150" height="13" backcolor="#E0E0E0" uuid="0e24ece5-8ce4-4085-b923-783c2d7b62c7">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.3"/>
+					<leftPen lineWidth="0.3"/>
+					<bottomPen lineWidth="0.3"/>
+					<rightPen lineWidth="0.3"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["HORA REGISTRADA"]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="40" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy">
+				<reportElement mode="Transparent" x="0" y="0" width="56" height="40" backcolor="#E0E0E0" uuid="02e452f0-4a69-4ec5-91e1-5d12a7e29379">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FECHA}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="56" y="0" width="40" height="40" backcolor="#E0E0E0" uuid="122f7552-f20f-4c7d-8018-f7f8710060f8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CLAVE_P}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="96" y="0" width="172" height="40" backcolor="#E0E0E0" uuid="4a6a9fdc-a7d3-4004-a8c7-57b59eec87c5">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NOMBRE_P}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="420" y="0" width="150" height="40" backcolor="#E0E0E0" uuid="fb2e5cc5-efe8-4f4e-b2ca-2dee5c3947f4">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HORA_REGISTRADA}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="268" y="0" width="152" height="40" backcolor="#E0E0E0" uuid="e22862f0-af5d-414d-8bd5-d20f39049c96">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2"/>
+					<leftPen lineWidth="0.2"/>
+					<bottomPen lineWidth="0.2"/>
+					<rightPen lineWidth="0.2"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NOM_DEPTO}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="26" splitType="Stretch">
+			<staticText>
+				<reportElement x="496" y="10" width="76" height="16" uuid="ee8e9abb-3fc4-4470-93c1-e355794f3501"/>
+				<textElement>
+					<font fontName="Arial" size="6"/>
+				</textElement>
+				<text><![CDATA[Sistema personal antiguo]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

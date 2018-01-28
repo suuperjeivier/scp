@@ -1,0 +1,303 @@
+$(function(){
+	var tabla = document.getElementById("tb_listaItems");
+    var tablaExiste = document.getElementById("contenedorTabla").contains(tabla);
+    var nombreItemConf = '';
+    var tipoItemConf = '';
+    var idTipoItem = -1;
+	if(tablaExiste){
+		$('#tb_listaItems').DataTable({
+				fixedHeader: true
+			});
+	}
+	
+	/**
+	 * Formato para los inputs de tipo hora
+	 * 
+	 */
+	 $(".horaF24").inputmask({
+		 mask: "h:s:s",
+		 placeholder: "__:__:__",
+		 alias: "datetime",
+		 hourFormat: "24",
+		 showMaskOnHover: false
+	});
+	 
+	 $("#btnImprimirHorarios").click(function(e) {
+		 window.open('data:application/vnd.ms-excel,' + encodeURIComponent($('#divTablaItems').html()));
+		 e.preventDefault();
+	 });
+	
+	$('#modalItem').on('show.bs.modal', function (event) {
+		var button = $(event.relatedTarget); // Button that triggered the modal
+		var editar = button.data('editar'); // Extract info from data-* attributes
+		nombreItemConf = button.data('nombreitemconf');
+		tipoItemConf = button.data('tipoitemconf');
+		idTipoItem = tipoItemConf;
+		// If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+		// Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+		var modal = $(this);			
+		if(editar == 1){
+			var idItem = button.data('id');
+			var skuItem = button.data('sku');
+			var nombreItem =button.data('nombre');
+			modal.find('.modal-title').text('EDITAR '+nombreItem+': ' + skuItem);			  
+			var noSerieItem = button.data('noserie');			  
+			var placasItem = button.data('placas');
+			var categoriaItem = button.data('categoria');
+			var modeloItem = button.data('modelo');
+			var colorItem = button.data('color');
+			var tamanoItem = button.data('tamano');
+			var marcaItem = button.data('marca');
+			var formaItem = button.data('forma');
+			var lineaItem = button.data('linea');
+			var itemAsignado = button.data('asignado');
+			var asignacionItem = button.data('asignacion');
+			var string1 = button.data('string1');
+			var fechaActualizacionItem = button.data('fechaact');
+			var comentariosItem = button.data('comentarios');
+			var situacionItem = button.data('situacion');
+			var ubicacionItem = button.data('ubicacion');
+			var contabilidadRecurso = button.data('contabilidad');
+			var fechaRecepcionItem = button.data('fecharec');
+			var contratoItem = button.data('contrato');
+			var proyectoItem = button.data('proyecto');
+			var statusItem = button.data('status');
+			
+			modal.find('.modal-body #idItemHidden').val(idItem);
+			modal.find('.modal-body #skuItemHidden').val(skuItem);
+			modal.find('.modal-body #skuItem').val(skuItem);
+			modal.find('.modal-body #nombreItem').val(nombreItem);
+			modal.find('.modal-body #noSerieItem').val(noSerieItem);
+			modal.find('.modal-body #placasItem').val(placasItem);
+			modal.find('.modal-body #categoriaItem').val(categoriaItem);
+			modal.find('.modal-body #modeloItem').val(modeloItem);
+			modal.find('.modal-body #colorItem').val(colorItem);
+			modal.find('.modal-body #tamanoItem').val(tamanoItem);
+			modal.find('.modal-body #marcaItem').val(marcaItem);
+			modal.find('.modal-body #formaItem').val(formaItem);
+			modal.find('.modal-body #lineaItem').val(lineaItem);			
+			modal.find('.modal-body #itemAsignadoItem').prop('checked', itemAsignado);
+			modal.find('.modal-body #asignacionItem').val(asignacionItem);
+			modal.find('.modal-body #string1Item').val(string1);
+			modal.find('.modal-body #fechaActualizacionItem').val(fechaActualizacionItem);
+			modal.find('.modal-body #comentariosItem').val(comentariosItem);
+			modal.find('.modal-body #situacionItem').val(situacionItem);
+			modal.find('.modal-body #ubicacionItem').val(ubicacionItem);
+			modal.find('.modal-body #contabilidadRecursoItem').val(contabilidadRecurso);
+			modal.find('.modal-body #fechaRecepcionItem').val(fechaRecepcionItem);
+			modal.find('.modal-body #contratoItem').val(contratoItem);
+			modal.find('.modal-body #proyectoItem').val(proyectoItem);
+			modal.find('.modal-body #statusItem').val(statusItem);
+			
+			
+
+		}else{
+				
+			modal.find('.modal-body #idItemHidden').val('');
+			actualizaSkuNuevoItem();
+			$('#formItems')[0].reset();
+			modal.find('.modal-title').text('NUEVO '+ nombreItemConf );//+ $("#skuItem").val()
+//			$('#skuItem').prop('disabled', 'disabled');
+			
+		}
+
+	})
+		
+	function actualizaSkuNuevoItem(){
+		$.ajax({
+			url: "./listados",
+			data: {
+				action: "selectMaxIdItem",	
+				typeId: idTipoItem
+			},
+			success: function(data){
+				console.log(data);
+				$("#skuItem").val(data);
+				$("#skuItemHidden").val(data);
+//				$("#cveHorario").prop("disabled", true);
+
+			},
+			error: function(data){
+				var alertError = '<div class="alert alert-danger"><strong>Error!</strong> '+data.text+'. </div>';
+				$("#initRow").html(alertError);
+				swal({
+					type: 'error',
+					title: "SKU de "+nombreItemConf + ' no actualizado!',
+					html: nombreItemConf + ' no guardado'
+				})
+			},
+			complete: function(xhr, status){	
+				var alertSuccess = '<div class="alert alert-success"><strong>Correcto!</strong> '+ nombreItemConf +' guardado correctamente!.</div>';
+				var alertError = '<div class="alert alert-danger"><strong>Error!</strong> '+xhr.text+'. </div>';
+				if(status != 'error'){
+					//$("#initRow").html(alertSuccess);	
+				}else{
+					$("#initRow").html(alertError);	
+				}								
+				console.log(xhr);
+			}
+		});
+	}
+	
+	$('#modalItems').on('hidden.bs.modal', function (e) {
+			
+		
+	})
+	
+	
+	$('#modalItems').on('hide.bs.modal', function(e){		
+			
+			swal({
+				title: 'Desea descartar los datos del ' + nombreItemConf + '?',
+				text: "Se dispone a descartar los datos del " + nombreItemConf + "!",
+				type: 'question',
+				showCancelButton: true,		  
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Si, descartarlos!',
+				cancelButtonText: 'No, espera!',
+				confirmButtonClass: 'btn btn-success',
+				cancelButtonClass: 'btn btn-danger',   			
+				showLoaderOnConfirm: true,		 
+				preConfirm: function () {
+					return new Promise(function (resolve, reject) {
+						$('#formItems').trigger("reset");
+						
+						resolve();
+					})
+				},
+				allowOutsideClick: false
+			}).then(function () {
+				console.log("Terminado!");
+
+			}, function (dismiss) {
+				// dismiss can be 'cancel', 'overlay',
+				// 'close', and 'timer'
+				if (dismiss === 'cancel') {
+					swal(	'Detenido',
+							'Puede volver a revisar los datos',
+					'error');
+					$("#modalItems").modal('toggle');					
+				}
+			}).catch(swal.noop);
+		
+
+	});
+	
+	function msieversion() 
+	{
+	    var ua = window.navigator.userAgent;
+	    var msie = ua.indexOf("MSIE ");
+	    var isIe;
+	    if (msie > 0) // If Internet Explorer, return version number
+	    {
+	        //alert(parseInt(ua.substring(msie + 5, ua.indexOf(".", msie))));
+	    	isIe=true;
+	    }
+	    else  // If another browser, return 0
+	    {
+	        //alert('otherbrowser');
+	    	isIe=false;
+	    }
+
+	    return isIe;
+	}
+	
+	
+	$('#formItems').on('submit',function(event){		
+		event.preventDefault() ;
+		event.stopPropagation();
+		try{
+			if(idTipoItem > 0){
+			swal({
+				title: 'Desea guardar los datos del ' + nombreItemConf + '?',
+				text: "Se dispone a guardar los datos del " + nombreItemConf + "!",
+				type: 'question',
+				showCancelButton: true,		  
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Si, guardarlo!',
+				cancelButtonText: 'No, espera!',
+				confirmButtonClass: 'btn btn-success',
+				cancelButtonClass: 'btn btn-danger',   			
+				showLoaderOnConfirm: true,		 
+				preConfirm: function () {
+					return new Promise(function (resolve, reject) {
+						$.ajax({
+							url: "./listados?action=guardarItem&typeId="+idTipoItem,
+							data: $('#formItems').serialize(),		  
+							success: function(data){
+								if(data == '1'){
+									$('#formItems')[0].reset();	
+									$("#modalItems").modal('toggle');
+									swal({
+										type: 'success',
+										title: 'Correcto!',
+										html: nombreItemConf + ' guardado'
+									});
+									setTimeout(function(){ 
+										console.log(idTipoItem);
+//										window.location = "./listados?action=consultarItems"+idTipoItem;
+									}, 
+									1000);
+
+								}else{
+									swal({
+										type: 'error',
+										title: 'Error!',
+										html: nombreItemConf + ' no guardado'
+									});
+								}
+							},
+							error: function(data){
+								var alertError = '<div class="alert alert-danger"><strong>Error!</strong> '+data.text+'. </div>';
+								$("#initRow").html(alertError);
+								swal({
+									type: 'error',
+									title: nombreItemConf + ' no guardado!',
+									html: nombreItemConf + ' no guardado'
+								})
+							},
+							complete: function(xhr, status){								
+								if(status != 'error'){
+									var alertSuccess = '<div class="alert alert-success"><strong>Correcto!</strong> ' + nombreItemConf + ' guardado correctamente!.</div>';
+									$("#initRow").html(alertSuccess);	
+								}else{
+									var alertError = '<div class="alert alert-danger"><strong>Error!</strong> '+xhr.responseText+'. </div>';
+									$("#initRow").html(alertError);	
+								}								
+								console.log(xhr);
+							}
+						});
+					})
+				},
+				allowOutsideClick: false
+			}).then(function () {
+
+
+			}, function (dismiss) {
+				// dismiss can be 'cancel', 'overlay',
+				// 'close', and 'timer'
+				if (dismiss === 'cancel') {
+					swal(	'Detenido',
+							'Puede volver a revisar los datos',
+					'error');
+				}
+			}).catch(swal.noop);
+			
+		}else{
+			swal({
+				type: 'error',
+				title: nombreItemConf + ' no guardado!',
+				html: 'tipoItem no definido!'
+			})
+		}
+		} catch (e) {
+			throw new Error(e.message);
+		}
+
+	});
+	
+	
+	
+})

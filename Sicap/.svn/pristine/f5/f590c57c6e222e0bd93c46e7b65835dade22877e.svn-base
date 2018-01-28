@@ -1,0 +1,125 @@
+package controller;
+
+import java.io.IOException;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import dto.user.UserDTO;
+import service.config.ConfigService;
+
+/**
+ * Servlet implementation class ConfigController
+ */
+@WebServlet(description = "Recibe las peticiones para configuraciones del sistema", urlPatterns = { "/config" })
+public class ConfigController extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	private ConfigService configService;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public ConfigController() {
+        super();
+        if(this.getConfigService() == null){
+        	this.setConfigService(new ConfigService());
+        }
+        
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		UserDTO user = (UserDTO)session.getAttribute("user");
+		if(user != null){
+			String action = request.getParameter("action");	
+			if(action != null && !action.equals("") && action.length() > 0){
+				if(action.equals("consultarMenus")){
+					consultarMenus(request,response);
+				}else if(action.equals("nuevoMenu")){
+					nuevoMenu(request,response);
+				}else if(action.equals("consultarSubmenus")){
+					consultarSubmenus(request,response);
+				}else if(action.equals("nuevoActualizarSubmenus")){
+					nuevoActualizarSubmenus(request,response);
+				}else{
+					System.out.println("El servicio no tiene accion1!");
+				}
+			}else{
+				System.out.println("El servicio no tiene accion0! "+ action +" "+ this.getClass().getSimpleName());
+			}
+		}else{
+			RequestDispatcher r = request.getRequestDispatcher("index.jsp");
+			try {
+				r.forward(request, response);
+			} catch (ServletException | IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
+		doGet(request, response);
+	}
+	
+	public void consultarMenus(HttpServletRequest request, HttpServletResponse response){
+		//getConfigService().consultarMenusService(request, response);
+		RequestDispatcher r = getServletContext().getRequestDispatcher("/jsp/config/config_menus.jsp");
+		try {
+			r.forward(request, response);
+		} catch (ServletException | IOException e) {
+			
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	public void nuevoMenu(HttpServletRequest request, HttpServletResponse response){		
+		getConfigService().nuevoMenuService(request, response);
+	}
+	
+	public void consultarSubmenus(HttpServletRequest request, HttpServletResponse response){	
+		getConfigService().consultarMenusService(request, response);
+		getConfigService().consultarSubmenusService(request, response);
+		RequestDispatcher r = getServletContext().getRequestDispatcher("/jsp/config/config_subMenu.jsp");
+		try {
+			r.forward(request, response);
+		} catch (ServletException | IOException e) {
+			
+			e.printStackTrace();
+		}
+	}
+	public void nuevoActualizarSubmenus(HttpServletRequest request, HttpServletResponse response){
+		getConfigService().nuevoActualizarSubmenusService(request, response);
+	}
+	
+
+	/**
+	 * @return the configService
+	 */
+	private ConfigService getConfigService() {
+		return configService;
+	}
+
+	/**
+	 * @param configService the configService to set
+	 */
+	private void setConfigService(ConfigService configService) {
+		this.configService = configService;
+	}
+
+}

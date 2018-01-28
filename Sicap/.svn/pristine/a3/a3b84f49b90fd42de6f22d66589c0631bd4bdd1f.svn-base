@@ -1,0 +1,226 @@
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<c:if test="${user == null}">
+	<c:redirect url="./" />
+</c:if>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />		
+		<!-- pageContext.request.contextPath -->
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+		<meta name="description"
+			content="Pagina para editar los menús <c:out value='${title}'/>" />
+		<meta name="author" content="Sistemas C4 Tabasco">
+		<link rel="manifest" href="./web_app_manifest.json">
+		<link rel='shortcut icon' type='image/x-icon' href='./favicon.ico' />
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link href="css/base/base.css" rel="stylesheet">
+		<link rel="stylesheet" href="css/sweetalert2.min.css" />
+		<link rel="stylesheet"
+			href="fonts/fontawesome/font-awesome-4.7.0/css/font-awesome.min.css">
+				<link rel="stylesheet" href="css/jquery-ui.min.css" />
+		<link rel="stylesheet" href="css/jquery-ui.theme.min.css" />	
+		<link rel="stylesheet" href="css/dataTables.bootstrap4.min.css" />
+		<link rel="stylesheet" href="css/listados/usuarios/usuariosCSS.css" />
+		
+		<title> <c:out value='${title}'/>| <c:out value="${configSistema.tituloSistema}" /></title>
+	</head>
+	<body>
+		<jsp:include page="/jsp/header/header.jsp"></jsp:include>	
+		<div class="container-fluid">
+			<div class="row" id="initRow"></div>
+			<div class="page-header">
+				<h1>
+					<i class="fa fa-search" aria-hidden="true"></i> Menús
+					<small>Agregar <c:out value='${title}'/></small>
+				</h1>
+			</div>
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item"><a href="#"><i
+						class="fa fa-clock-o" aria-hidden="true"></i> Menú </a></li>
+				<li class="breadcrumb-item active"><i class="fa fa-search"
+					aria-hidden="true"></i> Agregar</li>
+			</ol>
+			<div class="row">
+				<form class="form-inline"
+					action="/Sicap/listados?action=buscarHorario" method="post">
+					
+						<h4><i class="fa fa-filter"></i>Filtros</h4>
+						<div class="form-group">
+							<label for="claveHorario">CLAVE DEL HORARIO:</label> <input
+								type="text" value="<c:out value="${filtroClave}" />"
+								class="form-control" id="claveHorario" name="claveHorario">
+						</div>
+						<button type="submit" class="btn btn-default"><i class="fa fa-search"></i> Buscar</button>
+					
+				</form>
+			</div>
+			<div class="row">
+				<button type="button" class="btn btn-success btn-margin" data-target="#modalMenus" data-toggle="modal" data-new="1"><i class="fa fa-plus"></i> Nuevo</button>
+				<c:if test="${fn:length(menus) gt 0}">
+					<button type="button" class="btn btn-primary btn-margin" id="btnImprimirMenus"> <i class="fa fa-print"></i> Imprimir Listado</button>
+				</c:if>
+				<!-- Modal -->
+				<div class="modal fade" id="modalMenus" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				  <div class="modal-dialog" role="document">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="modalLabel">Nuevo Menú</h5>
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				          <span aria-hidden="true">&times;</span>
+				        </button>
+				      </div>
+				      <form id="formMenus">
+							<div class="modal-body">
+								<div class="row">									
+									<div class="col-6">
+										<div class="form-group">
+											<%--<input type="text" value="<c:out value="${ultimoSkuEmpleado}"/>" id="skuEmpleadoHidden" name="skuEmpleadoHidden" size="5" maxlength="11"/> --%>
+											<input type="hidden" id="idMenuHidden" name="idMenuHidden"/>
+											<%-- <input type="hidden" id="idHorarioHidden" name="idHorarioHidden" />
+											<input type="hidden" id="cveHorarioHidden" name="cveHorarioHidden">--%>
+											<label for="nombreMenu">NOMBRE</label> 
+											<input type="text" class="form-control" name="nombreMenu" id="nombreMenu" required placeholder="Ej. Listados">
+										</div>
+									</div>
+									<div class="col-6">
+										<div class="form-group">
+											<label for="descripcionMenu">DESCRIPCIÓN</label> 
+											<input type="text" class="form-control" name="descripcionMenu" id="descripcionMenu" placeholder="Ej. Muestra los empleados">
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-6">
+										<div class="form-group">
+											<label for="urlMenu">URL</label> 
+											<input name="urlMenu" type="text" class="form-control"  id="urlMenu" placeholder="Ej. /listados?">
+										</div>
+									</div>
+									<div class="col-6">
+										<div class="form-group">
+											<label for="iconoMenu">ICONO</label> 
+											<input type="text" class="form-control" id="iconoMenu" name="iconoMenu" placeholder="Ej. fa-list" >
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-6">
+										<div class="form-group">
+											<label for="indexMenu">INDEX (Orden del menú)</label> 
+											<input type="number" class="form-control" id="indexMenu" name="indexMenu" placeholder="Ej. 1">
+										</div>
+									</div>
+									<div class="col-6">
+										<div class="form-group" id="divStatusMenu">
+										<label for="statusMenu">ESTATUS</label> 
+										<select class="form-control" id="statusMenu" name="statusMenu">
+											<option value="" selected>SELECCIONE...</option>
+											<option value="1">ACTIVO</option>
+											<option value="0">BAJA</option>
+										</select>
+									</div>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+								<button type="submit" class="btn btn-primary" id="">Guardar registro</button>
+							</div>
+						</form>
+				    </div>
+				  </div>
+				</div>
+			</div>
+			<div id="contenedorTabla">
+			<c:choose>	
+			<c:when test="${fn:length(menus) gt 0}">
+				<div class="table-responsive rowInicial2" id="divTablaMenus">
+					<table id="tb_listamenus" class="table table-striped table-bordered table-hover table-condensed">
+						<thead>
+							<tr>
+								<th><i class="fa fa-list" aria-hidden="true"></i>#</th>
+								<th><i class="fa fa-list" aria-hidden="true"></i> id</th>
+								<th width="12%"><i class="fa fa-list" aria-hidden="true"></i>NOMBRE:</th>
+								<th><i class="fa fa-list" aria-hidden="true"></i>DESCRIPCION:</th>
+								<th><i class="fa fa-list" aria-hidden="true"></i>URL:</th>
+								<th><i class="fa pencil-square-o" aria-hidden="true">ICONO:</th>
+								<th><i class="fa fa-list" aria-hidden="true"></i>INDEX:</th>
+								<th><i class="fa togle-on" aria-hidden="true"></i>ESTATUS:</th>
+								<th><i class="fa fa-edit" aria-hidden="true"></i>EDITAR:</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</tfoot>
+						<tbody>
+						<c:set var="i" value="1"></c:set>
+							<c:forEach var="row" items="${menus}">
+								<tr>
+									<td><c:out value="${i}" /></td>	
+									<td><c:out value="${row.idApp}" /></td>
+									<td><c:out value="${row.nombreApp}" /></td>
+									<td><c:out value="${row.descApp}" /></td>
+									<td><c:out value="${row.urlApp}" /></td>
+									<td><c:out value="${row.iconoApp}" /></td>
+									<td><c:out value="${row.indexApp}" /></td>
+									<td><c:out value="${row.statusApp}" /></td>	
+																
+								  	<td>
+								  	<a href="#modalMenus" data-toggle="modal" data-new="0" data-target="#modalMenus"
+										data-idMenu="<c:out value='${row.idApp}' />"
+										data-name="<c:out value='${row.nombreApp}' />"
+										data-desc="<c:out value='${row.descApp}' />"
+										data-url="<c:out value='${row.urlApp}' />"
+										data-icono="<c:out value='${row.iconoApp}' />"
+										data-index="<c:out value='${row.indexApp}' />"
+										data-status="<c:out value='${row.statusApp}' />"
+								><i class="fa fa-edit pointer" aria-hidden="true" ></i></a>
+							</td>
+						</tr>	
+							<c:set var="i" value="${i+1}"></c:set>
+							</c:forEach>
+						</tbody>
+					</table>
+				</div>
+			</c:when>
+				<c:otherwise>
+					 <div class="alert alert-info">
+						<strong>Aviso!</strong> SIN DATOS <c:out value="${mensaje}" /><i class="fa fa-file-o"></i>
+					</div>
+				</c:otherwise>
+			</c:choose>
+			</div>
+		</div>
+		<jsp:include page="../footer/footer.jsp"></jsp:include>		
+		<script src="js/jquery-3.1.1.min.js" type="text/javascript"></script>
+		<script src="js/tether.min.js" type="text/javascript"></script>
+		<script src="js/drop.js" type="text/javascript"></script>
+		<script src="js/bootstrap.min.js" type="text/javascript"></script>
+		<script src="js/base/base.js" type="text/javascript"></script>
+		<script src="js/jquery.inputmask.bundle.min.js" type="text/javascript"></script>
+		<script src="js/sweetalert2.min.js" type="text/javascript"></script>
+		<script src="js/jquery.dataTables.min.js" type="text/javascript"></script>
+		<script src="js/dataTables.bootstrap4.min.js" type="text/javascript"></script>
+		<script src="js/moment-with-locales.js" type="text/javascript"></script>
+		<script src="js/jquery-ui.min.js" type="text/javascript"></script>
+		<script src="js/chartJS.js" type="text/javascript"></script>
+		<script src="js/listados/usuariosJS.js" type="text/javascript"></script>
+	</body>
+</html>

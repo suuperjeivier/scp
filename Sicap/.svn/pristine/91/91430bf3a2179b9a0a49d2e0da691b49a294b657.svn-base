@@ -1,0 +1,258 @@
+package dto.ordenes;
+
+import herramientas.FechaDTO;
+
+public class OrdenDTO {
+	private int orderId;
+	private FechaDTO fecha;
+	private String noOficio;
+	private FechaDTO fechaSalida;
+	private FechaDTO fechaLlegada;
+	private VehiculoDTO vehiculoDTO;
+	private TecnicoDTO tecnicoDTO;
+	private TecnicoDTO tecnicoChoferDTO;
+	private String reporte;
+	private FechaDTO fechaSalidaR;
+	private FechaDTO fechaLlegadaR;
+	private String noOficioLib;
+	private double sumViaticos;
+	private char pagado;
+	private VehiculoDTO vehiculoDTOR;
+	private String noTarjeta;	
+	
+	public OrdenDTO(){
+		setFecha(new FechaDTO());
+		setFechaSalida(new FechaDTO());
+		setFechaLlegada(new FechaDTO());
+		setVehiculoDTO(new VehiculoDTO());
+		setTecnicoDTO(new TecnicoDTO());
+		setTecnicoChoferDTO(new TecnicoDTO());
+		setFechaSalidaR(new FechaDTO());
+		setFechaLlegadaR(new FechaDTO());
+		setVehiculoDTOR(new VehiculoDTO());
+	}
+
+	/**
+	 * @return the orderId
+	 */
+	public int getOrderId() {
+		return orderId;
+	}
+
+	/**
+	 * @param orderId the orderId to set
+	 */
+	public void setOrderId(int orderId) {
+		this.orderId = orderId;
+	}
+
+	/**
+	 * @return the fecha
+	 */
+	public FechaDTO getFecha() {
+		return fecha;
+	}
+
+	/**
+	 * @param fecha the fecha to set
+	 */
+	public void setFecha(FechaDTO fecha) {
+		this.fecha = fecha;
+	}
+
+	/**
+	 * @return the noOficio
+	 */
+	public String getNoOficio() {
+		return noOficio;
+	}
+
+	/**
+	 * @param noOficio the noOficio to set
+	 */
+	public void setNoOficio(String noOficio) {
+		this.noOficio = noOficio;
+	}
+
+	/**
+	 * @return the fechaSalida
+	 */
+	public FechaDTO getFechaSalida() {
+		return fechaSalida;
+	}
+
+	/**
+	 * @param fechaSalida the fechaSalida to set
+	 */
+	public void setFechaSalida(FechaDTO fechaSalida) {
+		this.fechaSalida = fechaSalida;
+	}
+
+	/**
+	 * @return the fechaLlegada
+	 */
+	public FechaDTO getFechaLlegada() {
+		return fechaLlegada;
+	}
+
+	/**
+	 * @param fechaLlegada the fechaLlegada to set
+	 */
+	public void setFechaLlegada(FechaDTO fechaLlegada) {
+		this.fechaLlegada = fechaLlegada;
+	}
+
+	/**
+	 * @return the vehiculoDTO
+	 */
+	public VehiculoDTO getVehiculoDTO() {
+		return vehiculoDTO;
+	}
+
+	/**
+	 * @param vehiculoDTO the vehiculoDTO to set
+	 */
+	public void setVehiculoDTO(VehiculoDTO vehiculoDTO) {
+		this.vehiculoDTO = vehiculoDTO;
+	}
+
+	/**
+	 * @return the tecnicoDTO
+	 */
+	public TecnicoDTO getTecnicoDTO() {
+		return tecnicoDTO;
+	}
+
+	/**
+	 * @param tecnicoDTO the tecnicoDTO to set
+	 */
+	public void setTecnicoDTO(TecnicoDTO tecnicoDTO) {
+		this.tecnicoDTO = tecnicoDTO;
+	}
+
+	/**
+	 * @return the reporte
+	 */
+	public String getReporte() {
+		return reporte;
+	}
+
+	/**
+	 * @param reporte the reporte to set
+	 */
+	public void setReporte(String reporte) {
+		this.reporte = reporte;
+	}
+
+	/**
+	 * @return the fechaSalidaR
+	 */
+	public FechaDTO getFechaSalidaR() {
+		return fechaSalidaR;
+	}
+
+	/**
+	 * @param fechaSalidaR the fechaSalidaR to set
+	 */
+	public void setFechaSalidaR(FechaDTO fechaSalidaR) {
+		this.fechaSalidaR = fechaSalidaR;
+	}
+
+	/**
+	 * @return the fechaLlegadaR
+	 */
+	public FechaDTO getFechaLlegadaR() {
+		return fechaLlegadaR;
+	}
+
+	/**
+	 * @param fechaLlegadaR the fechaLlegadaR to set
+	 */
+	public void setFechaLlegadaR(FechaDTO fechaLlegadaR) {
+		this.fechaLlegadaR = fechaLlegadaR;
+	}
+
+	/**
+	 * @return the noOficioLib
+	 */
+	public String getNoOficioLib() {
+		return noOficioLib;
+	}
+
+	/**
+	 * @param noOficioLib the noOficioLib to set
+	 */
+	public void setNoOficioLib(String noOficioLib) {
+		this.noOficioLib = noOficioLib;
+	}
+
+	/**
+	 * @return the sumViaticos
+	 */
+	public double getSumViaticos() {
+		return sumViaticos;
+	}
+
+	/**
+	 * @param sumViaticos the sumViaticos to set
+	 */
+	public void setSumViaticos(double sumViaticos) {
+		this.sumViaticos = sumViaticos;
+	}
+
+	/**
+	 * @return the pagado
+	 */
+	public char getPagado() {
+		return pagado;
+	}
+
+	/**
+	 * @param pagado the pagado to set
+	 */
+	public void setPagado(char pagado) {
+		this.pagado = pagado;
+	}
+
+	/**
+	 * @return the vehiculoDTOR
+	 */
+	public VehiculoDTO getVehiculoDTOR() {
+		return vehiculoDTOR;
+	}
+
+	/**
+	 * @param vehiculoDTOR the vehiculoDTOR to set
+	 */
+	public void setVehiculoDTOR(VehiculoDTO vehiculoDTOR) {
+		this.vehiculoDTOR = vehiculoDTOR;
+	}
+
+	/**
+	 * @return the noTarjeta
+	 */
+	public String getNoTarjeta() {
+		return noTarjeta;
+	}
+
+	/**
+	 * @param noTarjeta the noTarjeta to set
+	 */
+	public void setNoTarjeta(String noTarjeta) {
+		this.noTarjeta = noTarjeta;
+	}
+
+	/**
+	 * @return the tecnicoChoferDTO
+	 */
+	public TecnicoDTO getTecnicoChoferDTO() {
+		return tecnicoChoferDTO;
+	}
+
+	/**
+	 * @param tecnicoChoferDTO the tecnicoChoferDTO to set
+	 */
+	public void setTecnicoChoferDTO(TecnicoDTO tecnicoChoferDTO) {
+		this.tecnicoChoferDTO = tecnicoChoferDTO;
+	}
+}

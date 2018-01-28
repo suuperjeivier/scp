@@ -1,0 +1,77 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<c:if test="${user == null}">
+	<c:redirect url="./" />
+</c:if>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<base href="${pageContext.request.contextPath}/" />
+<!-- pageContext.request.contextPath -->
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="">
+<meta name="author" content="Javier Brito">
+<link rel="manifest" href="./web_app_manifest.json">
+<link rel='shortcut icon' type='image/x-icon' href='./favicon.ico' />
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap.fd.css" rel="stylesheet">
+<link href="css/tether.min.css" rel="stylesheet">
+<link href="css/tether-theme-arrows.min.css" rel="stylesheet">
+<link href="css/cargaHorarioCSS.css" rel="stylesheet">
+<link href="css/base/base.css" rel="stylesheet">
+<link href="css/sweetalert2.min.css" rel="stylesheet">
+<link href="css/dropzone.css" rel="stylesheet">
+<link rel="stylesheet"
+	href="fonts/fontawesome/font-awesome-4.7.0/css/font-awesome.min.css">
+<title>Documento procesado | <c:out
+		value="${configSistema.tituloSistema}" /></title>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-lg-2">
+				<button id="btnGuardarHorario" class="btn btn-success btn-lg"
+					onclick="guardar();">
+					<i class="fa fa-plus" aria-hidden="true"></i> Guardar horario
+				</button>
+			</div>
+			<!-- onclick="parent.guardarHorario();" -->
+			<div class="col-lg-2">
+				<button id="btnBorrarHorario" class="btn btn-danger"
+					onclick="cancelar();">
+					<i class="fa fa-times" aria-hidden="true"></i> Borrar horario
+				</button>
+			</div>
+			<!-- onclick="parent.cancelFiles();" -->
+			<div class="table-responsive">
+				<table
+					class="table table-bordered table-condensed table-inverse table-striped table-hover"
+					id="previewExcel"></table>
+			</div>
+		</div>
+
+
+	</div>
+	<!-- /.container -->
+	<jsp:include page="../footer/footer.jsp"></jsp:include>
+
+
+	<!-- Bootstrap core JavaScript
+	    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="js/jquery-3.1.1.min.js" type="text/javascript"></script>
+	<script src="js/tether.min.js" type="text/javascript"></script>
+	<script src="js/drop.js" type="text/javascript"></script>
+	<script src="js/bootstrap.min.js" type="text/javascript"></script>
+	<script src="js/base/base.js" type="text/javascript"></script>
+	<!--     <script src="./js/bootstrap.fd.js" type="text/javascript"></script>-->
+	<script src="js/dropzone.js" type="text/javascript"></script>
+	<script src="js/sweetalert2.min.js" type="text/javascript"></script>
+	<script src="js/documentos/documentoProcesadoJS.js"
+		type="text/javascript"></script>
+
+</body>
+</html>
